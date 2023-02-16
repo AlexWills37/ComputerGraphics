@@ -42,8 +42,6 @@ public:
 	void PutPixel(int x, int y);
 	void ChangeBrushColor(int r, int g, int b, int a = SDL_ALPHA_OPAQUE);
 	void RefreshScreen();
-
-
 	void DrawLine(int x1, int y1, int x2, int y2);
 };
 
