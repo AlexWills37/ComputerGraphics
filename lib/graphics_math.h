@@ -21,7 +21,7 @@
  * @param destination - a pointer to the beginning of an integer array to store 
  *   the results of this function
  */
-void Interpolate(int i0, int d0, int i1, int d2, int* destination);
+void Interpolate(int i0, float d0, int i1, float d2, float* destination);
 
 
 

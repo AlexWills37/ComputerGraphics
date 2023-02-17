@@ -10,15 +10,7 @@
 #include "../lib/graphics.h"
 #include "../lib/graphics_math.h"
 
-Color NewColor(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	Color color;
-	color.red = red;
-	color.green = green;
-	color.blue = blue;
-	color.alpha = alpha;
-	return color;
-}
+
 
 /*
  * Create a graphics window and initialize SDL
@@ -84,6 +76,7 @@ void GraphicsManager::StayOpenBlocking()
  */
 void GraphicsManager::PutPixel(int x, int y)
 {
+//	std::cout << "Placing pixel at (" << x << ", " << y << ")" << std::endl;
 	SDL_RenderDrawPoint(renderer, x, y);			
 }
 
@@ -103,69 +96,13 @@ void GraphicsManager::RefreshScreen()
 	SDL_RenderPresent(renderer);
 }
 
-/*
- * Draw a line between two points.
- */
-void GraphicsManager::DrawLine(int x0, int y0, int x1, int y1)
-{
-
-	int deltax = x1 - x0;
-	int deltay = y1 - y0;
-	
-	if (abs(deltax) > abs(deltay))
-	{
-		// Line is mostly horizontal
-		// Ensure x0 < x1
-		if (x0 > x1)
-		{
-			int tempx = x0;
-			int tempy = y0;
-			x0 = x1;
-			y0 = y1;
-			x1 = tempx;
-			y1 = tempy;
-		}
-
-		// Make x the dependent variable and interpolate
-		int num_values = x1 - x0 + 1;
-		int y_values[num_values];
-		int* y_values_ptr = &(y_values[0]);
-		Interpolate(x0, y0, x1, y1, y_values_ptr);
-
-		// Draw the line
-		for (int i = 0; i < num_values; ++i)
-		{
-			this->PutPixel(x0 + i, y_values[i]);
-		}
-	}
-	else
-	{
-		// Line is mostly vertical
-		// Ensure y0 < y1
-		if (y0 > y1)
-		{
-			int tempx = x0;
-			int tempy = y0;
-			x0 = x1;
-			y0 = y1;
-			x1 = tempx;
-			y1 = tempy;
-		}
-
-		// Make y the dependent variable and interpolate
-		int num_values = y1 - y0 + 1;
-		int x_values[num_values];
-		int* x_values_ptr = &(x_values[0]);
-		Interpolate(y0, x0, y1, x1, x_values_ptr);
-
-		// Draw the line
-		for (int i = 0; i < num_values; ++i)
-		{
-			this->PutPixel(x_values[i], y0 + i);
-		}
-	}
-
-}
+// /*
+//  * Draw a line between two points.
+//  */
+// void GraphicsManager::DrawLine(int x0, int y0, int x1, int y1)
+// {
+// 	MakeLine(x0, y0, x1, y1, this);
+// }
 
 int tmain()
 {

@@ -11,12 +11,8 @@
 
 #include <iostream>
 #include "SDL2/SDL.h"
+#include "graphics_utility.h"
 
-struct Color {
-	uint8_t red, green, blue, alpha;
-};
-
-Color NewColor(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255);
 
 class GraphicsManager
 {
@@ -43,6 +39,9 @@ public:
 	void ChangeBrushColor(int r, int g, int b, int a = SDL_ALPHA_OPAQUE);
 	void RefreshScreen();
 	void DrawLine(int x1, int y1, int x2, int y2);
+	void DrawWireTriangle(int point0x, int point0y, int point1x, int point1y, int point2x, int point2y);
+	void DrawFillTriangle(Point p0, Point p1, Point p2);
+	void DrawGradientTriangle(Point p0, Point p1, Point p2, Color c, float h1, float h2, float h3);
 };
 
 
