@@ -18,7 +18,7 @@
  * @param width: the width of the window, in pixels
  * @param height: the height of the window, in pixels
  */
-void GraphicsManager::OpenWindow(uint16_t width, uint16_t height)
+void GraphicsManager::OpenWindow(int width, int height)
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	//SDL_CreateWindowAndRenderer(width, height, 0, &(this->window), &(this->renderer) );
@@ -96,13 +96,6 @@ void GraphicsManager::RefreshScreen()
 	SDL_RenderPresent(renderer);
 }
 
-// /*
-//  * Draw a line between two points.
-//  */
-// void GraphicsManager::DrawLine(int x0, int y0, int x1, int y1)
-// {
-// 	MakeLine(x0, y0, x1, y1, this);
-// }
 
 int tmain()
 {

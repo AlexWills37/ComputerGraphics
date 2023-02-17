@@ -10,6 +10,10 @@
 #include <cstdlib>
 #include <ctime>
 
+
+/*
+ * Swaps the values of two points
+ */
 void SwapPoints(Point& p0, Point& p1)
 {
 	int tempx = p0.x;
@@ -20,6 +24,10 @@ void SwapPoints(Point& p0, Point& p1)
 	p1.y = tempy;
 }
 
+/*
+ * Generates a random point.
+ * NOTE: Currently this does not work.
+ */
 Point RandomPoint()
 {
 	int randx, randy;
