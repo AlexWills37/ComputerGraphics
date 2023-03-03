@@ -133,10 +133,10 @@ float clamp(float value, float low, float high)
 void GraphicsManager::DrawGradientTriangle(Point p0, Point p1, Point p2, Color color, float h0, float h1, float h2)
 {
 
-//	// Clamp h values to avoid unexpected behavior
-//	h0 = clamp(h0, 0, 1);
-//	h1 = clamp(h1, 0, 1);
-//	h2 = clamp(h2, 0, 1);
+	// Clamp h values to avoid unexpected behavior
+	h0 = clamp(h0, 0, 1);
+	h1 = clamp(h1, 0, 1);
+	h2 = clamp(h2, 0, 1);
 
 	float temph;
 	// Sort points so that p0 has the lowest y value and p2 has the highest

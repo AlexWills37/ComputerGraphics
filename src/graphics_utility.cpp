@@ -10,6 +10,20 @@
 #include <cstdlib>
 #include <ctime>
 
+/*
+ * Creates a point.
+ * 
+ * @param x, y - the x and y coordinates of the point
+ *
+ * @return a Point object with the x and y coordinates
+ */
+Point MakePoint(int x, int y)
+{
+	Point point;
+	point.x = x;
+	point.y = y;
+	return point;
+}
 
 /*
  * Swaps the values of two points
@@ -38,4 +52,20 @@ Point RandomPoint()
 	point.x = randx;
 	point.y = randy;
 	return point;
+}
+
+/*
+ * Creates a color with RGB values.
+ *
+ * @param red, green, blue - the RGB values of the color to make
+ *
+ * @return a Color struct with the specified RGB values
+ */
+Color MakeColor(int red, int green, int blue)
+{
+	Color color;
+	color.red = red;
+	color.blue = blue;
+	color.green = green;
+	return color;
 }

@@ -31,6 +31,9 @@ void GraphicsManager::OpenWindow(int width, int height)
 		std::cout << "!!ERROR: " << SDL_GetError() << std::endl;
 	}
 
+	// Also set viewport width and height
+	this->viewport_width = width;
+	this->viewport_height = height;
 
 }
 

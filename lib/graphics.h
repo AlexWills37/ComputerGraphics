@@ -38,6 +38,10 @@ private:
 	SDL_Renderer* renderer;
 	SDL_Window* window;
 	SDL_Event event_handler;
+
+	int viewport_width;
+	int viewport_height;
+
 public:
 	/*
 	 * Opens and initializes a graphics window.
@@ -118,6 +122,9 @@ public:
 	 *   and 1 represents the chosen color on the gradient.
 	 */
 	void DrawGradientTriangle(Point p0, Point p1, Point p2, Color color, float h1, float h2, float h3);
+	
+	void DrawFillQuad(Point p0, Point p1, Point p2, Point p3, Color color);
+
 };
 
 

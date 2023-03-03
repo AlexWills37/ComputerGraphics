@@ -15,12 +15,34 @@ struct Point {
 	int x, y;
 };
 
+struct Point3D {
+	int x, y, z;
+};
+
+/*
+ * Simple function to make a point.
+ *
+ * @param x, y - the x and y coordinates of the point to make
+ *
+ * @return a Point struct with the specified x and y coordinates
+ */
+Point MakePoint(int x, int y);
+
 /*
  * Color structure to store RGB values.
  */
 struct Color {
 	int red, green, blue;
 };
+
+/*
+ * Simple function to create a color.
+ *
+ * @param red, green, blue - the RGB values of the color to make
+ *
+ * @return a Color struct with the RGB values specified
+ */
+Color MakeColor(int red, int green, int blue);
 
 /*
  * Swaps the values of 2 points.
