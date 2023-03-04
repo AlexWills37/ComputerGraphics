@@ -61,21 +61,74 @@ int main()
 	GraphicsManager test;
 	test.OpenWindow(1000, 1000);
 
-	triforce(&test);
+	// triforce(&test);
 
 	// CUBE
 	Point3D vAf, vBf, vCf, vDf, vAb, vBb, vCb, vDb;
 	
-	vAf = {2, 0.5, 5};
-	vBf = {2, 1.5, 5};
-	vCf = {1, 1.5, 5};
-	vDf = {1, 0.5, 5};
+	test.SetViewportDistance(4);
 
-	vAb = {2, 0.5, 6};
-	vBb = {2, 1.5, 6};
-	vCb = {1, 1.5, 6};
-	vDb = {1, 0.5, 6};
+	// The four "front" vertices
+	vAf = {-200, -50, 5};
+	vBf = {-200,  50, 5};
+	vCf = {-100,  50, 5};
+	vDf = {-100, -50, 5};
+
+	// The four "back" vertices
+	vAb = {-200, -50, 6};
+	vBb = {-200,  50, 6};
+	vCb = {-100,  50, 6};
+	vDb = {-100, -50, 6};
+
+	// The front face
+	test.DrawLine(test.ProjectVertex(vAf), test.ProjectVertex(vBf), BLUE);
+	test.DrawLine(test.ProjectVertex(vBf), test.ProjectVertex(vCf), BLUE);
+	test.DrawLine(test.ProjectVertex(vCf), test.ProjectVertex(vDf), BLUE);
+	test.DrawLine(test.ProjectVertex(vDf), test.ProjectVertex(vAf), BLUE);
+
+	// The back face
+	test.DrawLine(test.ProjectVertex(vAb), test.ProjectVertex(vBb), RED);
+	test.DrawLine(test.ProjectVertex(vBb), test.ProjectVertex(vCb), RED);
+	test.DrawLine(test.ProjectVertex(vCb), test.ProjectVertex(vDb), RED);
+	test.DrawLine(test.ProjectVertex(vDb), test.ProjectVertex(vAb), RED);
+
+	// The front-to-back edges
+	test.DrawLine(test.ProjectVertex(vAf), test.ProjectVertex(vAb), GREEN);
+	test.DrawLine(test.ProjectVertex(vBf), test.ProjectVertex(vBb), GREEN);
+	test.DrawLine(test.ProjectVertex(vCf), test.ProjectVertex(vCb), GREEN);
+	test.DrawLine(test.ProjectVertex(vDf), test.ProjectVertex(vDb), GREEN);
 	
+
+	// The four "front" vertices
+	vAf = {200, 200, 5};
+	vBf = {200,  400, 5};
+	vCf = {400,  400, 5};
+	vDf = {400, 200, 5};
+
+	// The four "back" vertices
+	vAb = {200, 200, 6};
+	vBb = {200,  400, 6};
+	vCb = {400,  400, 6};
+	vDb = {400, 200, 6};
+
+	// The front face
+	test.DrawLine(test.ProjectVertex(vAf), test.ProjectVertex(vBf), BLUE);
+	test.DrawLine(test.ProjectVertex(vBf), test.ProjectVertex(vCf), BLUE);
+	test.DrawLine(test.ProjectVertex(vCf), test.ProjectVertex(vDf), BLUE);
+	test.DrawLine(test.ProjectVertex(vDf), test.ProjectVertex(vAf), BLUE);
+
+	// The back face
+	test.DrawLine(test.ProjectVertex(vAb), test.ProjectVertex(vBb), RED);
+	test.DrawLine(test.ProjectVertex(vBb), test.ProjectVertex(vCb), RED);
+	test.DrawLine(test.ProjectVertex(vCb), test.ProjectVertex(vDb), RED);
+	test.DrawLine(test.ProjectVertex(vDb), test.ProjectVertex(vAb), RED);
+
+	// The front-to-back edges
+	test.DrawLine(test.ProjectVertex(vAf), test.ProjectVertex(vAb), GREEN);
+	test.DrawLine(test.ProjectVertex(vBf), test.ProjectVertex(vBb), GREEN);
+	test.DrawLine(test.ProjectVertex(vCf), test.ProjectVertex(vCb), GREEN);
+	test.DrawLine(test.ProjectVertex(vDf), test.ProjectVertex(vDb), GREEN);
+
 
 	// square(&test);
 
@@ -93,11 +146,11 @@ int main()
 //	}
 
 
-	Point2D a, b, c, d, e, f, g;
-	a = {0, 0};
-	b = {20, 40};
-	c = {-90, 0};
-	test.DrawFillTriangle(a, b, c, PURPLE);
+	// Point2D a, b, c, d, e, f, g;
+	// a = {0, 0};
+	// b = {20, 40};
+	// c = {-90, 0};
+	// test.DrawFillTriangle(a, b, c, PURPLE);
 
 	test.RefreshScreen();
 

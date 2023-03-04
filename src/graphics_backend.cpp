@@ -34,9 +34,11 @@ void GraphicsManager::OpenWindow(int width, int height)
 		std::cout << "!!ERROR: " << SDL_GetError() << std::endl;
 	}
 
-	// Also set viewport width and height
+	// Also set viewport dimensions
 	this->viewport_width = width;
 	this->viewport_height = height;
+	this->viewport_distance = 5;	// This default viewport distance is arbitrary
+
     this->canvas_width = width;
     this->canvas_height = height;
     
