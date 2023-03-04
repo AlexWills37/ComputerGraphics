@@ -15,24 +15,38 @@
 
 /*
  * Draws the outline of a triangle.
+ * 
+ * @param p0, p1, p2 - the three points of the triangle
  */
-void GraphicsManager::DrawWireTriangle(int point0x, int point0y, int point1x, int point1y, int point2x, int point2y)
+void GraphicsManager::DrawWireTriangle(Point2D p0, Point2D p1, Point2D p2)
 {
-	this->DrawLine(point0x, point0y, point1x, point1y);
-	this->DrawLine(point1x, point1y, point2x, point2y);
-	this->DrawLine(point2x, point2y, point0x, point0y);
+	this->DrawLine(p0, p1);
+	this->DrawLine(p1, p2);
+	this->DrawLine(p2, p0);
 
 }
 
 /*
+ * Draws the outline of a triangle.
+ * 
+ * @param p0, p1, p2 - the three points of the triangle
+ * @param color - the color of the triangle
+ */
+void GraphicsManager::DrawWireTriangle(Point2D p0, Point2D p1, Point2D p2, Color color)
+{
+	this->ChangeBrushColor(color);
+	this->DrawWireTriangle(p0, p1, p2);
+}
+
+/*
  * Draws a triangle with the inside filled.
- * The color of the triangle is determined by the curent brush color.
+ * The color of the triangle is determined by the curent brush color by default.
  *
  * @param p0 - the first point of the triangle
  * @param p1 - the second point of the triangle
  * @param p2 - the third point of the triangle
  */
-void GraphicsManager::DrawFillTriangle(Point p0, Point p1, Point p2)
+void GraphicsManager::DrawFillTriangle(Point2D p0, Point2D p1, Point2D p2)
 {
 	// Sort points so that p0 has the lowest y value and p2 has the highest
 	if (p1.y < p0.y)
@@ -94,30 +108,20 @@ void GraphicsManager::DrawFillTriangle(Point p0, Point p1, Point p2)
 }
 
 /*
- * Clamp a value between two other values.
+ * Draws a triangle with the inside filled.
  *
- * @param value - the value to clamp
- * @param low - the lower boundary for the value
- * @param high - the upper boundary for the value
- * 
- * @return either low, value, or high, depending on if the value
- * 	is above high or below low.
+ * @param p0 - the first point of the triangle
+ * @param p1 - the second point of the triangle
+ * @param p2 - the third point of the triangle
+ * @param color - the color to fill the triangle with
  */
-float clamp(float value, float low, float high)
+void GraphicsManager::DrawFillTriangle(Point2D p0, Point2D p1, Point2D p2, Color color)
 {
-	if (value < low)
-	{
-		return low;
-	}
-	else if (value > high)
-	{
-		return high;
-	}
-	else
-	{
-		return value;
-	}
+	this->ChangeBrushColor(color);
+	this->DrawFillTriangle(p0, p1, p2);
 }
+
+
 
 /*
  * Draws a triangle with a shaded gradient in the middle,
@@ -130,7 +134,7 @@ float clamp(float value, float low, float high)
  * @param h0, h1, h2 - the intensity of the color at each point of the triangle (between 0 and 1).
  *   0 specifies black, 1 specifies the color parameter, and the values in between specify a blend.
  */ 
-void GraphicsManager::DrawGradientTriangle(Point p0, Point p1, Point p2, Color color, float h0, float h1, float h2)
+void GraphicsManager::DrawGradientTriangle(Point2D p0, Point2D p1, Point2D p2, Color color, float h0, float h1, float h2)
 {
 
 	// Clamp h values to avoid unexpected behavior
@@ -215,8 +219,8 @@ void GraphicsManager::DrawGradientTriangle(Point p0, Point p1, Point p2, Color c
 
 	// Draw horizontal lines
 	int y_index;
-	int red, green, blue;
 	int segment_width;
+	Color pixel_color;
 	for(int y = p0.y; y <= p2.y; ++y)
 	{
 		y_index = y - p0.y;
@@ -231,17 +235,12 @@ void GraphicsManager::DrawGradientTriangle(Point p0, Point p1, Point p2, Color c
 		{
 			// Get the index of the segment
 			// Unclamped RGB values
-			red = color.red * h_segment[x - int(left_x_list[y_index])];
-			green = color.green * h_segment[x - int(left_x_list[y_index])];
-			blue = color.blue * h_segment[x - int(left_x_list[y_index])];
+			// red = color.red * h_segment[x - int(left_x_list[y_index])];
+			// green = color.green * h_segment[x - int(left_x_list[y_index])];
+			// blue = color.blue * h_segment[x - int(left_x_list[y_index])];
+			pixel_color = color * h_segment[x - int(left_x_list[y_index])];
 
-		//	// Clamped RGB values
-		//	red = clamp(color.red * h_segment[x - int(left_x_list[y_index])], 0, 255);
-		//	green = clamp(color.green * h_segment[x - int(left_x_list[y_index])], 0, 255);
-		//	blue = clamp(color.blue * h_segment[x - int(left_x_list[y_index])], 0, 255);
-	
-			this->ChangeBrushColor(red, green, blue);
-			this->PutPixel(int(x), int(y));
+			this->PutPixel(int(x), int(y), pixel_color);
 		}
 	}
 }

@@ -1,6 +1,10 @@
 /* graphics_polygon.cpp
  * 
  * File for handline polygon draws beyond a triangle.
+ * 
+ * This file is currently deprecated because it goes beyond the scope
+ * of this course and is not necessary (not to mention it does not always
+ * work).
  *
  * @author Alex Wills
  * @date February 19, 2023
@@ -10,12 +14,12 @@
 
 enum Direction { left, right };
 
-void GraphicsManager::DrawFillQuad(Point p0, Point p1, Point p2, Point p3, Color color)
+void GraphicsManager::DrawFillQuad(Point2D p0, Point2D p1, Point2D p2, Point2D p3, Color color)
 {
 	
 	this->ChangeBrushColor(color.red, color.green, color.blue);	
 
-	// Sort points by height
+	// Sort Point2Ds by height
 	if (p0.y > p3.y)
 	{
 		SwapPoints(p0, p3);
@@ -27,7 +31,7 @@ void GraphicsManager::DrawFillQuad(Point p0, Point p1, Point p2, Point p3, Color
 	if (p2.y > p3.y)
 	{
 		SwapPoints(p2, p3);
-	} // p3 is now the highest point
+	} // p3 is now the highest Point2D
 
 	if (p0.y > p2.y)
 	{
@@ -42,12 +46,12 @@ void GraphicsManager::DrawFillQuad(Point p0, Point p1, Point p2, Point p3, Color
 	{
 		SwapPoints(p0, p1);
 	}
-	// All points are now sorted
+	// All Point2Ds are now sorted
 
-	// Next we must determine what points are opposite of each other.
+	// Next we must determine what Point2Ds are opposite of each other.
 	// My claim is that we can determine this by looking at the 
-	// relative x positions of each point in order.
-	
+	// relative x positions of each Point2D in order.
+	// THIS IS WRONG
 	/*    |  Case 1  |  Case 2  |  Case 3  | Case 4  |
 	 * p3 |     .    |    .     |  .       |.        |
 	 * p2 |    .     |       .  |    .     | .       |
@@ -56,8 +60,8 @@ void GraphicsManager::DrawFillQuad(Point p0, Point p1, Point p2, Point p3, Color
 	 */
 	
 	// In case 1 and 2, p0 and p3 are opposites, and p1 and p2 are opposites.
-	// In case 1, the points move Left, Right, Left. In case 2, the points move Right, Left, Right.
-	// (Movement determined by looking at a point's x value related to the x value of the point above it)
+	// In case 1, the Point2Ds move Left, Right, Left. In case 2, the Point2Ds move Right, Left, Right.
+	// (Movement determined by looking at a Point2D's x value related to the x value of the Point2D above it)
 	// Seemingly, in all other cases, p0 and p2 are opposites, and p1 and p3 are opposites.
 	
 	Direction first_direction, second_direction, third_direction;

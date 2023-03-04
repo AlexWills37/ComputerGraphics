@@ -11,12 +11,13 @@ using namespace std;
 
 void square(GraphicsManager* manager)
 {
-	Point p0 = MakePoint(100, 200);
-	Point p1 = MakePoint(100, 600);
-	Point p2 = MakePoint(900, 900);
-	Point p3 = MakePoint(900, 100);
+	typedef Point2D Point;
+	Point p0 = {-400, -300};
+	Point p1 = {-400, 100};
+	Point p2 = {400, 502};
+	Point p3 = {400, -400};
 
-	Color blue = MakeColor(37, 255, 255);
+	Color blue = {37, 255, 255};
 
 	manager->DrawGradientTriangle(p0, p1, p2, blue, 0.3, 0.4, 0.5);
 	manager->DrawGradientTriangle(p2, p3, p0, blue, 0.5, 0.6, 0.3);
@@ -26,38 +27,29 @@ void square(GraphicsManager* manager)
 
 void triforce(GraphicsManager* manager)
 {
-	
+	typedef Point2D Point;
 	Point p0, p1, p2;
-	p0.x = 900;
-	p0.y = 900;
-	p1.x = 100;
-	p1.y = 900;
-	p2.x = 500;
-	p2.y = 100;
+	p0 = {-400, -400};
+	p1 = {0, 400};
+	p2 = {400, -400};
 
-	Point p3 = MakePoint(300, 500);
-	Point p4 = MakePoint(700, 500);
-	Point p5 = MakePoint(500, 900);
+	Point p3 = {0, -400};
+	Point p4 = {-200, 0};
+	Point p5 = {200, 0};
 
-	Color yellow = MakeColor(255, 245, 37);
-	Color grugle = MakeColor(37, 255, 253);
+	Color yellow = {255, 245, 37};
+	Color grugle = {37, 255, 253};
 
-	manager->DrawGradientTriangle(p1, p3, p5, yellow, 0, 1, 1);
-	manager->DrawGradientTriangle(p5, p4, p0, yellow, 1, 1, 0);
-	manager->DrawGradientTriangle(p3, p2, p4, yellow, 1, 0, 1);
+	manager->DrawGradientTriangle(p4, p5, p1, yellow, 1, 1, 0);
+	manager->DrawGradientTriangle(p0, p4, p3, yellow, 0, 1, 1);
+	manager->DrawGradientTriangle(p3, p2, p5, YELLOW, 1, 0, 1);
 
 	manager->DrawGradientTriangle(p3, p5, p4, grugle, 1, 0, 1);
 	manager->RefreshScreen();
 }
 
 
-Point ProjectVertex(Point3D vertex, float d)
-{
-	int dest_x, dest_y;
-	dest_x = vertex.x * d / vertex.z;
-	dest_y = vertex.y * d / vertex.z;
-	return Point{dest_x, dest_y};
-}
+
 
 int main()
 {
@@ -69,7 +61,7 @@ int main()
 	GraphicsManager test;
 	test.OpenWindow(1000, 1000);
 
-	//triforce(&test);
+	triforce(&test);
 
 	// CUBE
 	Point3D vAf, vBf, vCf, vDf, vAb, vBb, vCb, vDb;
@@ -85,7 +77,7 @@ int main()
 	vDb = {1, 0.5, 6};
 	
 
-//	square(&test);
+	// square(&test);
 
 //	Point points[9];
 //	for(int i = 0; i < 9; ++i)
@@ -100,6 +92,12 @@ int main()
 //		}
 //	}
 
+
+	Point2D a, b, c, d, e, f, g;
+	a = {0, 0};
+	b = {20, 40};
+	c = {-90, 0};
+	test.DrawFillTriangle(a, b, c, PURPLE);
 
 	test.RefreshScreen();
 

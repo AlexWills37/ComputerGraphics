@@ -7,28 +7,16 @@
  */
 
 #include "../lib/graphics_utility.h"
+#include "../lib/graphics_math.h"
 #include <cstdlib>
 #include <ctime>
 
-/*
- * Creates a point.
- * 
- * @param x, y - the x and y coordinates of the point
- *
- * @return a Point object with the x and y coordinates
- */
-Point MakePoint(int x, int y)
-{
-	Point point;
-	point.x = x;
-	point.y = y;
-	return point;
-}
+
 
 /*
  * Swaps the values of two points
  */
-void SwapPoints(Point& p0, Point& p1)
+void SwapPoints(Point2D& p0, Point2D& p1)
 {
 	int tempx = p0.x;
 	int tempy = p0.y;
@@ -38,34 +26,44 @@ void SwapPoints(Point& p0, Point& p1)
 	p1.y = tempy;
 }
 
-/*
- * Generates a random point.
- * NOTE: Currently this does not work.
- */
-Point RandomPoint()
-{
-	int randx, randy;
-	randx = rand() % 1000;
 
-	randy = rand() % 1000;
-	Point point;
-	point.x = randx;
-	point.y = randy;
-	return point;
+
+Color operator*(Color color, float scalar)
+{
+	int r = int(color.red * scalar);
+	int g = int(color.green * scalar);
+	int b = int(color.blue * scalar);
+
+	r = clamp(r, 0, 255);
+	g = clamp(g, 0, 255);
+	b = clamp(b, 0, 255);
+
+	return Color{r, g, b};
 }
 
-/*
- * Creates a color with RGB values.
- *
- * @param red, green, blue - the RGB values of the color to make
- *
- * @return a Color struct with the specified RGB values
- */
-Color MakeColor(int red, int green, int blue)
+Color operator+(Color c1, Color c2)
 {
-	Color color;
-	color.red = red;
-	color.blue = blue;
-	color.green = green;
-	return color;
+	int r = c1.red + c2.red;
+	int g = c1.green + c2.green;
+	int b = c1.blue + c2.blue;
+
+	r = clamp(r, 0, 255);
+	g = clamp(g, 0, 255);
+	b = clamp(b, 0, 255);
+
+	return Color{r, g, b};
 }
+
+Color operator-(Color c1, Color c2)
+{
+	int r = c1.red - c2.red;
+	int g = c1.green - c2.green;
+	int b = c1.blue - c2.blue;
+
+	r = clamp(r, 0, 255);
+	g = clamp(g, 0, 255);
+	b = clamp(b, 0, 255);
+
+	return Color{r, g, b};
+}
+

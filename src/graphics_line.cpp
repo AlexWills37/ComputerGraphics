@@ -7,70 +7,72 @@
 
 #include <cstdlib>
 
-#include "../lib/graphics_math.h"
 #include "../lib/graphics.h"
 
 /*
  * Draws a line on the graphics manager from point 0 to point 1.
  *
- * @param x0, y0 - the first point of the line
- * @param x1, y1 - the second point of the line
+ * @param p0 - the point where the line begins
+ * @param p1 - the point where the line ends
  */
-void GraphicsManager::DrawLine(int x0, int y0, int x1, int y1)
+void GraphicsManager::DrawLine(Point2D p0, Point2D p1)
 {
-    int deltax = x1 - x0;
-	int deltay = y1 - y0;
+    int deltax = p1.x - p0.x;
+	int deltay = p1.y - p0.y;
 	
 	if (abs(deltax) > abs(deltay))
 	{
 		// Line is mostly horizontal
 		// Ensure x0 < x1
-		if (x0 > x1)
+		if (p0.x > p1.x)
 		{
-			int tempx = x0;
-			int tempy = y0;
-			x0 = x1;
-			y0 = y1;
-			x1 = tempx;
-			y1 = tempy;
+			SwapPoints(p0, p1);
 		}
 
 		// Make x the dependent variable and interpolate
-		int num_values = abs(x1 - x0) + 1;
+		int num_values = p1.x - p0.x + 1;
 		float y_values[num_values];
 		float* y_values_ptr = &(y_values[0]);
-		Interpolate(x0, y0, x1, y1, y_values_ptr);
+		Interpolate(p0.x, p0.y, p1.x, p1.y, y_values_ptr);
 
 		// Draw the line
 		for (int i = 0; i < num_values; ++i)
 		{
-		    this->PutPixel(x0 + i, int(y_values[i]));
+		    this->PutPixel(p0.x + i, int(y_values[i]));
 		}
 	}
 	else
 	{
 		// Line is mostly vertical
 		// Ensure y0 < y1
-		if (y0 > y1)
+		if (p0.y > p1.y)
 		{
-			int tempx = x0;
-			int tempy = y0;
-			x0 = x1;
-			y0 = y1;
-			x1 = tempx;
-			y1 = tempy;
+			SwapPoints(p0, p1);
 		}
 
 		// Make y the dependent variable and interpolate
-		int num_values = abs(y1 - y0) + 1;
+		int num_values = p1.y - p0.y + 1;
 		float x_values[num_values];
 		float* x_values_ptr = &(x_values[0]);
-		Interpolate(y0, x0, y1, x1, x_values_ptr);
+		Interpolate(p0.y, p0.x, p1.y, p1.x, x_values_ptr);
 
 		// Draw the line
 		for (int i = 0; i < num_values; ++i)
 		{
-			this->PutPixel(int(x_values[i]), y0 + i);
+			this->PutPixel(int(x_values[i]), p0.y + i);
 		}
 	}
+}
+
+/*
+ * Draws a line on the graphics manager from point 0 to point 1.
+ *
+ * @param p0 - the point where the line begins
+ * @param p1 - the point where the line ends
+ * @param color - the color of the line to draw
+ */
+void GraphicsManager::DrawLine(Point2D p0, Point2D p1, Color color)
+{
+	this->ChangeBrushColor(color);
+	this->DrawLine(p0, p1);
 }
