@@ -47,11 +47,12 @@ private:
 	SDL_Window* window;
 	SDL_Event event_handler;
 
-	int viewport_width, viewport_height, viewport_distance;	// Dimensions of the viewport
+	float viewport_width, viewport_height, viewport_distance;	// Dimensions of the viewport
 	int canvas_width, canvas_height;		// Dimsnesions of the canvas (screen/window)
 	int max_screen_x, max_screen_y;			// Locations of the top right corner, when the center of the screen is 0,0
 
 
+// Functions to be implemented in graphics_backend.cpp
 public:
 	/*
 	 * Opens and initializes a graphics window.
@@ -98,6 +99,8 @@ public:
 	 */
 	void RefreshScreen();
 	
+// 2D Drawing functions
+public:
 	/*
 	 * Places a line on the screen between two points.
 	 *
@@ -137,7 +140,25 @@ public:
 	 *   and 1 represents the chosen color on the gradient.
 	 */
 	void DrawGradientTriangle(Point2D p0, Point2D p1, Point2D p2, Color color, float h1, float h2, float h3);
+
+// 3D Drawing
+public:
 	
+	/*
+	 * Sets the distance between the viewport and the camera.
+	 *
+	 * @param distance - the distance (in world units) from the camera that the viewport is.
+	 */
+	void SetViewportDistance(float distance);
+	
+	/*
+	 * Converts a point from 3D space to canvas space, based on this graphic
+	 * manager's viewport.
+	 *
+	 * @param vertex - the 3D point to render
+	 * @return the 3D point's location on the 2D canvas, as seen through the viewport
+	 */
+	Point2D ProjectVertex(Point3D vertex);
 
 };
 
