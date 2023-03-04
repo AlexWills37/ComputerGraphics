@@ -17,10 +17,18 @@
 #define _GRAPHICS_H
 
 #include <iostream>
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
+#include "graphics_math.h"
 #include "graphics_utility.h"
 
-
+// Color constants
+static constexpr Color RED = {255, 0, 0};
+static constexpr Color ORANGE = {255, 153, 51};
+static constexpr Color YELLOW = {255, 255, 51};
+static constexpr Color GREEN = {51, 255, 51};
+static constexpr Color BLUE = {0, 255, 255};
+static constexpr Color INDIGO = {0, 0, 255};
+static constexpr Color PURPLE = {127, 0, 255};
 /*
  * Graphics Manager class to handle graphics calls.
  * This header is an interface between user-friendly graphics methods
@@ -39,8 +47,10 @@ private:
 	SDL_Window* window;
 	SDL_Event event_handler;
 
-	int viewport_width;
-	int viewport_height;
+	int viewport_width, viewport_height, viewport_distance;	// Dimensions of the viewport
+	int canvas_width, canvas_height;		// Dimsnesions of the canvas (screen/window)
+	int max_screen_x, max_screen_y;			// Locations of the top right corner, when the center of the screen is 0,0
+
 
 public:
 	/*
@@ -64,10 +74,13 @@ public:
 	/*
 	 * Places a pixel on the screen at (x, y).
 	 * 
-	 * @param x - the x coordinate (0 is the leftmost column)
-	 * @param y - the y coordinate (0 is the topmost row)
+	 * @param x - the x coordinate (0 is the center)
+	 * @param y - the y coordinate (0 is the center)
 	 */
 	void PutPixel(int x, int y);
+	void PutPixel(int x, int y, Color color);
+	void PutPixel(Point2D point);
+	void PutPixel(Point2D point, Color color);
 	
 	/*
 	 * Changes the color to draw pixels with.
@@ -78,6 +91,7 @@ public:
 	 * @param a (optional) - the alpha value of the color [0, 255] (default 255 = opaque)
 	 */
 	void ChangeBrushColor(int r, int g, int b, int a = SDL_ALPHA_OPAQUE);
+	void ChangeBrushColor(Color color);
 	
 	/*
 	 * Updates the screen to reflect any changes made by placing pixels.
@@ -87,21 +101,21 @@ public:
 	/*
 	 * Places a line on the screen between two points.
 	 *
-	 * @param x1 - the x coordinate of point 1
-	 * @param y1 - the y coordinate of point 1
-	 * @param x2 - the x coordinate of point 2
-	 * @param y2 - the y coordinate of point 2
+	 * @param point0 - the first point for the line
+	 * @param point1 - the second point for the line
 	 */
-	void DrawLine(int x1, int y1, int x2, int y2);
+	void DrawLine(Point2D point0, Point2D point1);
+	void DrawLine(Point2D point0, Point2D point1, Color color);
 	
 	/*
 	 * Draws the outline of a triangle between three points (the center will not be filled).
 	 *
-	 * @param point0x, point0y - the x and y values of point 0 of the triangle
-	 * @param point1x, point1y - the x and y values of point 1 of the triangle
-	 * @param point2x, point2y - the x and y values of point 2 of the triangle
+	 * @param point0 - the x and y values of point 0 of the triangle
+	 * @param point1 - the x and y values of point 1 of the triangle
+	 * @param point2 - the x and y values of point 2 of the triangle
 	 */
-	void DrawWireTriangle(int point0x, int point0y, int point1x, int point1y, int point2x, int point2y);
+	void DrawWireTriangle(Point2D point0, Point2D point1, Point2D point2);
+	void DrawWireTriangle(Point2D point0, Point2D point1, Point2D point2, Color color);
 	
 	/*
 	 * Draws a triangle between three points with the center filled in.
@@ -111,7 +125,8 @@ public:
 	 * @param p1 - the second point in the triangle
 	 * @param p2 - the third point in the triangle
 	 */
-	void DrawFillTriangle(Point p0, Point p1, Point p2);
+	void DrawFillTriangle(Point2D p0, Point2D p1, Point2D p2);
+	void DrawFillTriangle(Point2D p0, Point2D p1, Point2D p2, Color color);
 	
 	/*
 	 * Draws a triangle between three points and fills in the center with a gradient.
@@ -121,9 +136,8 @@ public:
 	 * @param h0, h1, h2 - the intensity of each point [0, 1]. 0 represents black on the gradient,
 	 *   and 1 represents the chosen color on the gradient.
 	 */
-	void DrawGradientTriangle(Point p0, Point p1, Point p2, Color color, float h1, float h2, float h3);
+	void DrawGradientTriangle(Point2D p0, Point2D p1, Point2D p2, Color color, float h1, float h2, float h3);
 	
-	void DrawFillQuad(Point p0, Point p1, Point p2, Point p3, Color color);
 
 };
 

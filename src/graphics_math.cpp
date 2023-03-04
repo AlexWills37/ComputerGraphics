@@ -47,3 +47,29 @@ void Interpolate(int i0, float d0, int i1, float d1, float* destination)
 		working_dependent += slope;
 	}
 }
+
+/*
+ * Clamp a value between two other values.
+ *
+ * @param value - the value to clamp
+ * @param low - the lower boundary for the value
+ * @param high - the upper boundary for the value
+ * 
+ * @return either low, value, or high, depending on if the value
+ * 	is above high or below low.
+ */
+float clamp(float value, float low, float high)
+{
+	if (value < low)
+	{
+		return low;
+	}
+	else if (value > high)
+	{
+		return high;
+	}
+	else
+	{
+		return value;
+	}
+}
