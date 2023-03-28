@@ -8,8 +8,6 @@
 
 
 #include "../lib/graphics.h"
-#include "../lib/graphics_math.h"
-#include "../lib/graphics_utility.h"
 #include <cstdlib>
 #include <iostream>
 

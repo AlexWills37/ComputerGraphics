@@ -67,3 +67,4 @@ Color operator-(Color c1, Color c2)
 	return Color{r, g, b};
 }
 
+

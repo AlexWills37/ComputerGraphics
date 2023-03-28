@@ -17,9 +17,11 @@
 #define _GRAPHICS_H
 
 #include <iostream>
+#include <functional>
 #include <SDL2/SDL.h>
 #include "graphics_math.h"
 #include "graphics_utility.h"
+#include "graphics_scene.h"
 
 // Color constants
 static constexpr Color RED = {255, 0, 0};
@@ -51,6 +53,8 @@ private:
 	int canvas_width, canvas_height;		// Dimsnesions of the canvas (screen/window)
 	int max_screen_x, max_screen_y;			// Locations of the top right corner, when the center of the screen is 0,0
 
+	Camera main_camera;	// Where the graphics will be viewed from
+
 
 // Functions to be implemented in graphics_backend.cpp
 public:
@@ -71,6 +75,8 @@ public:
 	 * Keeps the window open by blocking the program.
 	 */
 	void StayOpenBlocking();
+
+	void InteractiveBlocking(const std::function <void (float, float, float, float, float, float)>& move);
 	
 	/*
 	 * Places a pixel on the screen at (x, y).
@@ -153,12 +159,20 @@ public:
 	
 	/*
 	 * Converts a point from 3D space to canvas space, based on this graphic
-	 * manager's viewport.
+	 * manager's viewport. Assumes the camera is at (0, 0) facing towards the positive Z direction.
 	 *
 	 * @param vertex - the 3D point to render
 	 * @return the 3D point's location on the 2D canvas, as seen through the viewport
 	 */
 	Point2D ProjectVertex(Point3D vertex);
+
+
+	// void RenderScene(Scene scene);
+
+// Camera and scene
+public:
+	Camera* GetMainCamera();
+
 
 };
 
