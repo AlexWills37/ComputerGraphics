@@ -36,49 +36,41 @@ void Interpolate(int i0, float d0, int i1, float d2, float* destination);
  */
 float clamp(float value, float low, float high);
 
-struct TransformationMatrix {
+/*
+ * 4x4 matrix to represent a transform.
+ * 
+ * To apply a transform to a set of coordinates, multiply the matrix
+ * with a 4x1 matrix representing the coordinates. This is handled in
+ * the HomCoordinates struct.
+ * 
+ * Always multiply with the TransformMatrix on the left side, and the HomCoordinates
+ * on the right.
+ */
+struct TransformMatrix {
     float data[4][4];
 };
 
-class Transform {
-    public:
-	float scale[3];
-	float rotation[3];
-	float translation[3];
-
-    // Constructors
-    Transform(float sx, float sy, float sz, float rx, float ry, float rz, float tx, float ty, float tz)
-    {
-        scale[0] = sx;
-        scale[1] = sy;
-        scale[2] = sz;
-        rotation[0] = rx;
-        rotation[1] = ry;
-        rotation[2] = rz;
-        translation[0] = tx;
-        translation[1] = ty;
-        translation[2] = tz;
-    }
-
-    Transform() : Transform(1, 1, 1, 0, 0, 0, 0, 0, 0)
-    {}
-
-    operator TransformationMatrix() const;
-};
-
-
-
-
+/*
+ * 4x1 matrix (vector) to represent homogenous coordinates.
+ * This is most often a 3D point ( the fourth element != 0 ),
+ * but can also be a vector ( the fourth element == 0 ).
+ */
 struct HomCoordinates {
     float data[4];
 };
 
-TransformationMatrix GetTransformMatrix(Transform);
 
-TransformationMatrix operator*(TransformationMatrix, TransformationMatrix);
+/*
+ * Multiplies two 4x4 matrices (TransformMatrix objects).
+ * NOT commutative. A * B != B * A
+ */
+TransformMatrix operator*(TransformMatrix, TransformMatrix);
 
-HomCoordinates operator*(TransformationMatrix, HomCoordinates);
+/*
+ * Applies a transformation on a set of coordinates.
+ * This is done by multiplying a 4x4 TransformMatrix with a 4x1 Homogenous Coordinates matrix.
+ */
+HomCoordinates operator*(TransformMatrix, HomCoordinates);
 
-TransformationMatrix invert(TransformationMatrix);
 
 #endif

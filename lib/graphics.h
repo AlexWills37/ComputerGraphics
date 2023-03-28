@@ -31,6 +31,10 @@ static constexpr Color GREEN = {51, 255, 51};
 static constexpr Color BLUE = {0, 255, 255};
 static constexpr Color INDIGO = {0, 0, 255};
 static constexpr Color PURPLE = {127, 0, 255};
+static constexpr Color BLACK = {0, 0, 0};
+static constexpr Color WHITE = {255, 255, 255};
+
+
 /*
  * Graphics Manager class to handle graphics calls.
  * This header is an interface between user-friendly graphics methods
@@ -45,6 +49,7 @@ public:
 	}
 
 private:
+	// Objects from SDL for handling graphics
 	SDL_Renderer* renderer;
 	SDL_Window* window;
 	SDL_Event event_handler;
@@ -53,7 +58,8 @@ private:
 	int canvas_width, canvas_height;		// Dimsnesions of the canvas (screen/window)
 	int max_screen_x, max_screen_y;			// Locations of the top right corner, when the center of the screen is 0,0
 
-	Camera main_camera;	// Where the graphics will be viewed from
+	Camera main_camera;		// Where the graphics will be viewed from
+	Scene current_scene;	// The current scene
 
 
 // Functions to be implemented in graphics_backend.cpp
@@ -76,7 +82,12 @@ public:
 	 */
 	void StayOpenBlocking();
 
-	void InteractiveBlocking(const std::function <void (float, float, float, float, float, float)>& move);
+	/*
+	 * Keeps the window open and allows the user to move the camera in the scene
+	 * with WASD to move on the X/Z plane, E and Q to move up/down on the Y axis,
+	 * and the arrow keys or IJKL to rotate up/down and left/right.
+	 */
+	void StayOpenCameraControls();
 	
 	/*
 	 * Places a pixel on the screen at (x, y).
@@ -104,6 +115,15 @@ public:
 	 * Updates the screen to reflect any changes made by placing pixels.
 	 */
 	void RefreshScreen();
+
+	/*
+	 * Clear the screen.
+	 */
+	void ClearScreen();
+	/*
+	 * Clear the screen with a specified color.
+	 */
+	void ClearScreen(Color color);
 	
 // 2D Drawing functions
 public:
@@ -165,13 +185,29 @@ public:
 	 * @return the 3D point's location on the 2D canvas, as seen through the viewport
 	 */
 	Point2D ProjectVertex(Point3D vertex);
+	Point2D ProjectVertex(HomCoordinates vertex);
 
 
 	// void RenderScene(Scene scene);
 
 // Camera and scene
 public:
+	/*
+	 * Returns a pointer to the camera being used by this GraphicsManager.
+	 */
 	Camera* GetMainCamera();
+
+	/*
+	 * Builds an empty scene with the current main Camera.
+	 * 
+	 * @return - a pointer to the new Scene, that you can add models to and render
+	 */
+	Scene* CreateScene();
+
+	/*
+	 * Returns a pointer to the Scene that is currently in use.
+	 */
+	Scene* GetCurrentScene();
 
 
 };

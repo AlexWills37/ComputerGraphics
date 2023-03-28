@@ -186,7 +186,7 @@ void render_scene(GraphicsManager* manager){
 
 }
 
-void RenderInstance(GraphicsManager* graphics, ModelInstance * instance, TransformationMatrix camera_matrix)
+void RenderInstance(GraphicsManager* graphics, ModelInstance * instance, TransformMatrix camera_matrix)
 {
 	Model * model = instance->model;
 
@@ -194,7 +194,7 @@ void RenderInstance(GraphicsManager* graphics, ModelInstance * instance, Transfo
 
 	HomCoordinates newPoint;
 	Point3D newPointPoint;
-	TransformationMatrix world_space_transform = instance->transform;	// This converts from model space to world space
+	TransformMatrix world_space_transform = instance->transform;	// This converts from model space to world space
 	// Project all of the points
 	for (int i = 0; i < model->numVertices; ++i)
 	{
@@ -222,21 +222,21 @@ void RenderInstance(GraphicsManager* graphics, ModelInstance * instance, Transfo
 }
 
 
-TransformationMatrix GetMatrix(Transform transform)
+TransformMatrix GetMatrix(Transform transform)
 {
-	TransformationMatrix m;
+	TransformMatrix m;
 
 	return m;
 }
 
 void MatrixTest()
 {
-	TransformationMatrix a = { { {5, 7, 9, 10},
+	TransformMatrix a = { { {5, 7, 9, 10},
 								{2, 3, 3, 8},
 								{8, 10, 2, 3},
 								{3, 3, 4, 8}}};
 
-	TransformationMatrix b = { { {3, 10, 12, 18},
+	TransformMatrix b = { { {3, 10, 12, 18},
 								{12, 1, 4, 9},
 								{9, 10, 12, 2},
 								{3, 12, 4, 10}}};
@@ -254,7 +254,7 @@ void MatrixTest()
 	// 	cout << i << ": " << c.data[i] << endl;
 	// }
 
-	TransformationMatrix out = a * b;
+	TransformMatrix out = a * b;
 	cout << "a * b: " << endl;
 	for (int row = 0; row < 4; ++row)
 	{
@@ -284,10 +284,7 @@ void MatrixTest()
 	// }
 }
 
-const void move(float x, float y, float z, float rx, float ry, float rz)
-{
-	cout << "nice"<< endl;
-}
+
 
 int main()
 {
@@ -324,7 +321,7 @@ int main()
 	Transform tz = Transform(1, 1, 1, 0, 0, 3.14/4, 1, 0, 8);
 	Transform t2 = Transform(1, 1, 1, 0, 0, 0, 4, 0, 8);
 
-	// Default X Y Z
+	// X Y Z Default
 
 	Transform camera = Transform(1, 1, 1, 0, -3.14/6, 0, -4, 0, 0);
 	
@@ -349,18 +346,19 @@ int main()
 	// render_scene(manager);
 	// RenderInstance(manager, &cube1, camera);
 	// RenderInstance(manager, &cube2, camera);
-
+	Scene* scene1 = test.CreateScene();
 	for (int i = 0; i < 4; ++i)
 	{
-		RenderInstance(manager, &(scene[i]), camera);
-	}
+		// RenderInstance(manager, &(scene[i]), camera);
+		scene1->AddModelInstance(scene[i]);
 
+
+	}
+	
+	scene1->RenderScene();
 	test.RefreshScreen();
 
-	test.InteractiveBlocking([=] (float x, float y, float z, float rx, float ry, float rz)
-		{
-			move(x, y, z, rx, ry, rz);
-		});
+	test.StayOpenCameraControls();
 	// test.StayOpenBlocking();
 	test.CloseWindow();
 

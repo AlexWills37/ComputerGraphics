@@ -43,7 +43,4 @@ void SwapPoints(Point2D& p0, Point2D& p1);
 
 
 
-
-// Point3D ApplyTransform(const Point3D * point, const Transform * transform);
-
 #endif

@@ -87,54 +87,7 @@ void GraphicsManager::StayOpenBlocking()
 		}
 	}
 }
-void GraphicsManager::InteractiveBlocking(const std::function <void (float, float, float, float, float, float)>& move)
-{
-	bool running = true;
-	SDL_Keysym key;
-	while(running)
-	{
-		// Go through the event queue
-		while ( SDL_PollEvent(&event_handler) )
-		{
-			// Handle the event
-			switch (event_handler.type)
-			{	
-				// Quit event
-				case SDL_QUIT:
-					running = false;
-					std::cout << "~ User has closed the window." << std::endl;
-					break;
-				case SDL_KEYDOWN:
-					key = event_handler.key.keysym;
 
-					std::cout << "~ User has pressed key: " << key.sym << std::endl;
-					switch (key.sym)
-					{
-						case SDLK_a:
-							move(-1, 0, 0, 0, 0, 0);
-							break;
-						case SDLK_s:
-							move(0, 0, -1, 0, 0, 0);
-							break;
-						case SDLK_d:
-							move(1, 0, 0, 0, 0, 0);
-							break;
-						case SDLK_w:
-							move(0, 0, 1, 0, 0, 0);
-							break;
-						default:
-							// Do nothing if key not recognized
-							break;
-					}
-
-
-					break;
-				default:
-					break;
-			}
-		}
-	}
-}
 
 /*
  * Place a pixel on the screen at a given location.
@@ -149,11 +102,13 @@ void GraphicsManager::PutPixel(int x, int y)
     if ( x < -(this->max_screen_x) || x > this->max_screen_x
 		|| y < -(this->max_screen_y) || y > this->max_screen_y)
     {
-        std::cout << "!!WARNING: Attempting to place a pixel outside of the screen: (" << x
-            << ", " << y << ")" << std::endl; 
+        // std::cout << "!!WARNING: Attempting to place a pixel outside of the screen: (" << x
+        //     << ", " << y << ")" << std::endl; 
     }
-
-    SDL_RenderDrawPoint(renderer, this->max_screen_x + x, this->max_screen_y - y);
+	else 
+	{
+	    SDL_RenderDrawPoint(renderer, this->max_screen_x + x, this->max_screen_y - y);
+	}
 	// Pixel (0, 0) (top left) == World space (-(width / 2), (width / 2)) 
 	// Pixel (width - 1, height - 1) == World space ( (width / 2) - 1, 1 -(width / 2))
 
@@ -177,6 +132,120 @@ void GraphicsManager::ChangeBrushColor(int red, int green, int blue, int alpha)
 void GraphicsManager::RefreshScreen()
 {
 	SDL_RenderPresent(renderer);
+}
+
+/*
+ * Clear the user's screen
+ */
+void GraphicsManager::ClearScreen()
+{
+	SDL_RenderClear(renderer);
+}
+
+
+/*
+ * Keeps the user's window open and allows the user to move the camera in the scene.
+ * Use WASD to move on the X/Z plane, E and Q to move up/down on the Y axis,
+ * and the arrow keys or IJKL to rotate up/down and left/right.
+ */
+void GraphicsManager::StayOpenCameraControls()
+{
+	
+
+	bool running = true;
+	SDL_Keysym key;
+	while(running)
+	{
+
+		// Go through the event queue
+		while ( SDL_PollEvent(&event_handler) )
+		{
+			// Handle the event
+			switch (event_handler.type)
+			{	
+				// Quit event
+				case SDL_QUIT:
+					running = false;
+					std::cout << "~ User has closed the window." << std::endl;
+					break;
+				case SDL_KEYDOWN:
+					key = event_handler.key.keysym;
+
+					//std::cout << "~ User has pressed key: " << key.sym << std::endl;
+					switch (key.sym)
+					{
+						// Move left
+						case SDLK_a:
+							this->main_camera.MovePosition(-0.1, 0, 0);
+							break;
+						// Move back
+						case SDLK_s:
+							this->main_camera.MovePosition(0, 0, -0.1);
+							break;
+						// Move right
+						case SDLK_d:
+							this->main_camera.MovePosition(0.1, 0, 0);
+							break;
+						// Move forward
+						case SDLK_w:
+							this->main_camera.MovePosition(0, 0, 0.1);
+							break;
+						// Move down
+						case SDLK_q:
+							this->main_camera.MovePosition(0, -0.1, 0);
+							break;
+
+						// Move up
+						case SDLK_e:
+							this->main_camera.MovePosition(0, 0.1, 0);
+							break;
+
+						// Rotate up
+						case SDLK_i:
+							// Fall through
+						case SDLK_UP:
+							this->main_camera.Rotate(3.14/60, 0, 0);
+							break;
+
+						// Rotate down
+						case SDLK_k:
+							// Fall through
+						case SDLK_DOWN:
+							this->main_camera.Rotate(-3.14/60, 0, 0);
+							break;
+						// Rotate counter-clockwise
+						case SDLK_j:
+							// Fall through
+						case SDLK_LEFT:
+							this->main_camera.Rotate(0, 3.14/60, 0);
+							break;
+						
+						// Rotate clockwise
+						case SDLK_l:
+							// Fall through
+						case SDLK_RIGHT:
+							this->main_camera.Rotate(0, -3.14/60, 0);
+						default:
+							// Do nothing if key not recognized
+							break;
+					}
+
+					
+
+					break;
+				default:
+					break;
+			}
+		}
+
+		// Clear screen
+		this->ChangeBrushColor(BLACK);
+		this->ClearScreen();
+		// Render new scene
+		this->current_scene.RenderScene();
+		this->RefreshScreen();
+
+	}
 }
 
 
@@ -205,4 +274,10 @@ void GraphicsManager::PutPixel(Point2D point, Color color)
 void GraphicsManager::ChangeBrushColor(Color color)
 {
 	this->ChangeBrushColor(color.red, color.green, color.blue);
+}
+
+void GraphicsManager::ClearScreen(Color color)
+{
+	this->ChangeBrushColor(color);
+	this->ClearScreen();
 }
