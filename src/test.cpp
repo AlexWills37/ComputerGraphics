@@ -2,9 +2,9 @@
 
 #include "../lib/graphics.h"
 #include <iostream>
-#include "../lib/graphics_math.h"
 #include "../lib/graphics_utility.h"
 #include <time.h>
+#include <functional>
 
 
 using namespace std;
@@ -48,20 +48,8 @@ void triforce(GraphicsManager* manager)
 	manager->RefreshScreen();
 }
 
-
-
-
-int main()
-{
-
-
-	
-			
-	// Initialize window
-	GraphicsManager test;
-	test.OpenWindow(1000, 1000);
-
-	// triforce(&test);
+void cube(GraphicsManager* manager){
+	GraphicsManager test = *manager;
 
 	// CUBE
 	Point3D vAf, vBf, vCf, vDf, vAb, vBb, vCb, vDb;
@@ -129,32 +117,251 @@ int main()
 	test.DrawLine(test.ProjectVertex(vCf), test.ProjectVertex(vCb), GREEN);
 	test.DrawLine(test.ProjectVertex(vDf), test.ProjectVertex(vDb), GREEN);
 
+}
+
+Point3D TranslatePoint(const Point3D p, float xDiff, float yDiff, float zDiff)
+{
+	Point3D newPoint;
+	newPoint.x = p.x + xDiff;
+	newPoint.y = p.y + yDiff;
+	newPoint.z = p.z + zDiff;
+
+	return newPoint;
+}
+
+void RenderTriangle(GraphicsManager* graphics, Triangle triangle, Point2D projected_vertices[])
+{
+	graphics->DrawWireTriangle(
+		projected_vertices[triangle.p0], projected_vertices[triangle.p1], projected_vertices[triangle.p2],
+		triangle.color);
+}
+
+void RenderObject(GraphicsManager* graphics, Point3D vertices[], int numVerts, Triangle triangles[], int numTris)
+{
+
+	// Get list of projected vertices
+	Point2D projected_points[numVerts];
+	for (int i = 0; i < numVerts; ++i)
+	{
+		projected_points[i] = graphics->ProjectVertex(TranslatePoint(vertices[i], -1.5, 0, 7));
+	}
+
+	// Render each triangle
+	for (int i = 0; i < numTris; ++i)
+	{
+		RenderTriangle(graphics, triangles[i], projected_points);
+	}
+
+}
+
+void render_scene(GraphicsManager* manager){
+	GraphicsManager test = *manager;
+	// Vertices
+	Point3D vertices[8];
+	vertices[0] = {1, 1, 1};
+	vertices[1] = {-1, 1, 1};
+	vertices[2] = {-1, -1, 1};
+	vertices[3] = {1, -1, 1};
+	vertices[4] = {1, 1, -1};
+	vertices[5] = {-1, 1, -1};
+	vertices[6] = {-1, -1, -1};
+	vertices[7] = {1, -1, -1};
+
+
+	Triangle triangles[12];
+	triangles[0] = {0,1,2,RED};
+	triangles[1] = {0,2,3,RED};
+	triangles[2] = {4,0,3,GREEN};
+	triangles[3] = {4,3,7,GREEN};
+	triangles[4] = {5,4,7,INDIGO};
+	triangles[5] = {5,7,6,INDIGO};
+	triangles[6] = {1,5,6,YELLOW};
+	triangles[7] = {1,6,2,YELLOW};
+	triangles[8] = {4,5,1,PURPLE};
+	triangles[9] = {4,1,0,PURPLE};
+	triangles[10] = {2,6,7,BLUE};
+	triangles[11] = {2,7,3,BLUE};
+	
+	RenderObject(manager, vertices, 8, triangles, 12);
+
+}
+
+void RenderInstance(GraphicsManager* graphics, ModelInstance * instance, TransformationMatrix camera_matrix)
+{
+	Model * model = instance->model;
+
+	Point2D projected_points[ model->numVertices ];
+
+	HomCoordinates newPoint;
+	Point3D newPointPoint;
+	TransformationMatrix world_space_transform = instance->transform;	// This converts from model space to world space
+	// Project all of the points
+	for (int i = 0; i < model->numVertices; ++i)
+	{
+		// Get the model-space point as homogenous coordinates
+		newPoint.data[0] = model->vertices[i].x;
+		newPoint.data[1] = model->vertices[i].y;
+		newPoint.data[2] = model->vertices[i].z;
+		newPoint.data[3] = 1;
+		
+		// Apply matrix to convert to world space
+		newPoint = world_space_transform * newPoint;
+		// Apply camera transform
+		newPoint = camera_matrix * newPoint;
+		newPointPoint = {newPoint.data[0], newPoint.data[1], newPoint.data[2]};
+
+		projected_points[i] = graphics->ProjectVertex(newPointPoint);
+	}
+
+	// Render all triangles
+	for (int i = 0; i < model->numTriangles; ++i)
+	{
+		RenderTriangle(graphics, model->triangles[i], projected_points);
+	}
+
+}
+
+
+TransformationMatrix GetMatrix(Transform transform)
+{
+	TransformationMatrix m;
+
+	return m;
+}
+
+void MatrixTest()
+{
+	TransformationMatrix a = { { {5, 7, 9, 10},
+								{2, 3, 3, 8},
+								{8, 10, 2, 3},
+								{3, 3, 4, 8}}};
+
+	TransformationMatrix b = { { {3, 10, 12, 18},
+								{12, 1, 4, 9},
+								{9, 10, 12, 2},
+								{3, 12, 4, 10}}};
+
+	Transform t = Transform(2, 1, 1, 3.14 / 2, 3.14 / 2, 0, 0, 5, 0);
+	HomCoordinates c;
+	c.data[0] = 1;
+	c.data[1] = 0;
+	c.data[2] = 0;
+	c.data[3] = 1;
+
+	// cout << "Before transformation:" << endl;
+	// for (int i = 0; i < 4; ++i)
+	// {
+	// 	cout << i << ": " << c.data[i] << endl;
+	// }
+
+	TransformationMatrix out = a * b;
+	cout << "a * b: " << endl;
+	for (int row = 0; row < 4; ++row)
+	{
+		for (int col = 0; col < 4; ++col)
+		{
+			cout << out.data[row][col] << "  ";
+		}
+		cout << endl;
+	}
+
+	out = b * a;
+	cout << "b * a: " << endl;
+	for (int row = 0; row < 4; ++row)
+	{
+		for (int col = 0; col < 4; ++col)
+		{
+			cout << out.data[row][col] << "  ";
+		}
+		cout << endl;
+	}
+
+	// HomCoordinates newC = out * c;
+	// cout << "After transformation:" << endl;
+	// for (int i = 0; i < 4; ++i)
+	// {
+	// 	cout << i << ": " << newC.data[i] << endl;
+	// }
+}
+
+const void move(float x, float y, float z, float rx, float ry, float rz)
+{
+	cout << "nice"<< endl;
+}
+
+int main()
+{
+
+	MatrixTest();
+	Point3D vertices[8];
+	vertices[0] = {1, 1, 1};
+	vertices[1] = {-1, 1, 1};
+	vertices[2] = {-1, -1, 1};
+	vertices[3] = {1, -1, 1};
+	vertices[4] = {1, 1, -1};
+	vertices[5] = {-1, 1, -1};
+	vertices[6] = {-1, -1, -1};
+	vertices[7] = {1, -1, -1};	
+
+	Triangle triangles[12];
+	triangles[0] = {0,1,2,RED};
+	triangles[1] = {0,2,3,RED};
+	triangles[2] = {4,0,3,GREEN};
+	triangles[3] = {4,3,7,GREEN};
+	triangles[4] = {5,4,7,INDIGO};
+	triangles[5] = {5,7,6,INDIGO};
+	triangles[6] = {1,5,6,YELLOW};
+	triangles[7] = {1,6,2,YELLOW};
+	triangles[8] = {4,5,1,PURPLE};
+	triangles[9] = {4,1,0,PURPLE};
+	triangles[10] = {2,6,7,BLUE};
+	triangles[11] = {2,7,3,BLUE};
+
+	Model cube = {vertices, 8, triangles, 12};
+
+	Transform tx = Transform(1, 1, 1, 3.14/4, 0, 0, -5, 0, 8);
+	Transform ty = Transform(1, 1, 1, 0, 3.14/4, 0, -2, 0, 8);
+	Transform tz = Transform(1, 1, 1, 0, 0, 3.14/4, 1, 0, 8);
+	Transform t2 = Transform(1, 1, 1, 0, 0, 0, 4, 0, 8);
+
+	// Default X Y Z
+
+	Transform camera = Transform(1, 1, 1, 0, -3.14/6, 0, -4, 0, 0);
+	
+
+
+	ModelInstance scene[4] = { {&cube, t2}, {&cube, tx}, {&cube, ty}, {&cube, tz}};
+	
+
+	
+			
+	// Initialize window
+	GraphicsManager test;
+	GraphicsManager* manager = &test;
+	test.OpenWindow(1000, 1000);
+	test.SetViewportDistance(6);
+	// triforce(&test);
+
 
 	// square(&test);
 
-//	Point points[9];
-//	for(int i = 0; i < 9; ++i)
-//	{
-//
-//		
-//		points[i] = RandomPoint();
-//		std::cout << "Point: (" << points[i].x << ", " << points[i].y << ")" << std::endl;
-//		if ((i + 1) % 3 == 0)
-//		{
-//			test.DrawFillTriangle(points[i], points[i-1], points[i-2]);
-//		}
-//	}
+	//cube(manager);
+	// render_scene(manager);
+	// RenderInstance(manager, &cube1, camera);
+	// RenderInstance(manager, &cube2, camera);
 
-
-	// Point2D a, b, c, d, e, f, g;
-	// a = {0, 0};
-	// b = {20, 40};
-	// c = {-90, 0};
-	// test.DrawFillTriangle(a, b, c, PURPLE);
+	for (int i = 0; i < 4; ++i)
+	{
+		RenderInstance(manager, &(scene[i]), camera);
+	}
 
 	test.RefreshScreen();
 
-	test.StayOpenBlocking();
+	test.InteractiveBlocking([=] (float x, float y, float z, float rx, float ry, float rz)
+		{
+			move(x, y, z, rx, ry, rz);
+		});
+	// test.StayOpenBlocking();
 	test.CloseWindow();
 
 	return 0;

@@ -35,8 +35,8 @@ void GraphicsManager::OpenWindow(int width, int height)
 	}
 
 	// Also set viewport dimensions
-	this->viewport_width = width;
-	this->viewport_height = height;
+	this->viewport_width = width / 50;
+	this->viewport_height = height / 50;
 	this->viewport_distance = 5;	// This default viewport distance is arbitrary
 
     this->canvas_width = width;
@@ -80,6 +80,54 @@ void GraphicsManager::StayOpenBlocking()
 				case SDL_QUIT:
 					running = false;
 					std::cout << "~ User has closed the window." << std::endl;
+					break;
+				default:
+					break;
+			}
+		}
+	}
+}
+void GraphicsManager::InteractiveBlocking(const std::function <void (float, float, float, float, float, float)>& move)
+{
+	bool running = true;
+	SDL_Keysym key;
+	while(running)
+	{
+		// Go through the event queue
+		while ( SDL_PollEvent(&event_handler) )
+		{
+			// Handle the event
+			switch (event_handler.type)
+			{	
+				// Quit event
+				case SDL_QUIT:
+					running = false;
+					std::cout << "~ User has closed the window." << std::endl;
+					break;
+				case SDL_KEYDOWN:
+					key = event_handler.key.keysym;
+
+					std::cout << "~ User has pressed key: " << key.sym << std::endl;
+					switch (key.sym)
+					{
+						case SDLK_a:
+							move(-1, 0, 0, 0, 0, 0);
+							break;
+						case SDLK_s:
+							move(0, 0, -1, 0, 0, 0);
+							break;
+						case SDLK_d:
+							move(1, 0, 0, 0, 0, 0);
+							break;
+						case SDLK_w:
+							move(0, 0, 1, 0, 0, 0);
+							break;
+						default:
+							// Do nothing if key not recognized
+							break;
+					}
+
+
 					break;
 				default:
 					break;
