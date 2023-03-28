@@ -49,3 +49,12 @@ Point2D GraphicsManager::ProjectVertex(Point3D vertex)
 }
 
 
+/*
+ * Converts a point from 3D space to canvas space, based on this graphic
+ * manager's viewport.
+ */
+Point2D GraphicsManager::ProjectVertex(HomCoordinates vertex)
+{
+    Point3D p_vertex = {vertex.data[0], vertex.data[1], vertex.data[2]};
+    return this->ProjectVertex(p_vertex);
+}
