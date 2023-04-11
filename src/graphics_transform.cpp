@@ -7,53 +7,28 @@
  */
 #include "../lib/graphics.h"
 
+
+//TODO: Store rotation MATRIX, not just euler angles
 Transform::operator TransformMatrix() const
 {
 
 	// First initialize all matrices
-	TransformMatrix xRot, yRot, zRot, scale, translation;
+	TransformMatrix scale, rotation, translation;
 	
-	// FIRST: Set all array values to 0
+	// Get rotation matrix
+	rotation = BuildRotationMatrix(this->rotation[0], this->rotation[1], this->rotation[2]);
+	
+	// Set all array values to 0
 	for (int row = 0; row < 4; ++row)
 	{
 		for (int col = 0; col < 4; ++col)
 		{
-			xRot.data[row][col] = 0;
-			yRot.data[row][col] = 0;
-			zRot.data[row][col] = 0;
 			scale.data[row][col] = 0;
 			translation.data[row][col] = 0;
 		}
 	}
 
-	// X rotation:
-	xRot.data[0][0] = 1;
-	xRot.data[1][1] = std::cos(this->rotation[0]);
-	xRot.data[1][2] = std::sin(this->rotation[0]);
-	xRot.data[2][1] = - std::sin(this->rotation[0]);
-	xRot.data[2][2] = std::cos(this->rotation[0]);
-	xRot.data[3][3] = 1;
 
-	// Y rotation:
-	yRot.data[1][1] = 1;
-	yRot.data[0][0] = std::cos(this->rotation[1]);
-	yRot.data[0][2] = - std::sin(this->rotation[1]);
-	yRot.data[2][0] = std::sin(this->rotation[1]);
-	yRot.data[2][2] = std::cos(this->rotation[1]);
-	yRot.data[3][3] = 1;
-
-	// Z rotation:
-	zRot.data[2][2] = 1;
-	zRot.data[0][0] = std::cos(this->rotation[2]);
-	zRot.data[1][0] = - std::sin(this->rotation[2]);
-	zRot.data[0][1] = std::sin(this->rotation[2]);
-	zRot.data[1][1] = std::cos(this->rotation[2]);
-	zRot.data[3][3] = 1;
-
-	// Combine all rotation
-	TransformMatrix rotation = (zRot * yRot) * xRot;
-	// Put a 1 in the bottom right corner
-	rotation.data[3][3] = 1;
 
 	// Scale matrix: scale along diagonal
 	for (int i = 0; i < 3; ++i)
@@ -74,4 +49,28 @@ Transform::operator TransformMatrix() const
 	// Return the final transformation, doing translation last (we are premultiplying)
 	return translation * (rotation * scale);
 
+}
+
+void Transform::MoveLocally(float deltaX, float deltaY, float deltaZ)
+{
+	// Get movement as a homogenous vector
+	HomCoordinates movement;
+	movement.data[0] = deltaX;
+	movement.data[1] = deltaY;
+	movement.data[2] = deltaZ;
+	movement.data[3] = 0;
+
+	// Get rotation matrix from this transform's rotations
+	TransformMatrix rotation = BuildRotationMatrix(this->rotation[0], this->rotation[1], this->rotation[2]);
+	movement = rotation * movement;
+
+	// Move transform globally now
+	this->translation[0] += movement.data[0];
+	this->translation[1] += movement.data[1];
+	this->translation[2] += movement.data[2];
+}
+
+void Transform::RotateAboutAxis(HomCoordinates axis_vector, float rotation)
+{
+	// Start by normalizing the axis
 }

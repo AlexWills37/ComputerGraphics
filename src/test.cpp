@@ -16,7 +16,7 @@ void square(GraphicsManager* manager)
 	Point p1 = {-400, 100};
 	Point p2 = {400, 502};
 	Point p3 = {400, -400};
-
+	
 	Color blue = {37, 255, 255};
 
 	manager->DrawGradientTriangle(p0, p1, p2, blue, 0.3, 0.4, 0.5);
@@ -289,7 +289,7 @@ void MatrixTest()
 int main()
 {
 
-	MatrixTest();
+	// MatrixTest();
 	Point3D vertices[8];
 	vertices[0] = {1, 1, 1};
 	vertices[1] = {-1, 1, 1};
@@ -329,8 +329,10 @@ int main()
 
 	ModelInstance scene[4] = { {&cube, t2}, {&cube, tx}, {&cube, ty}, {&cube, tz}};
 	
-
 	
+	Transform base = Transform(1.5, 0.3, 1.5, 0, 0, 0, 4, -3, 8);
+	
+	ModelInstance crystal[] = { {&cube, t2}, {&cube, base} };
 			
 	// Initialize window
 	GraphicsManager test;
@@ -354,7 +356,12 @@ int main()
 
 
 	}
+
+	test.rotate_cube = &(crystal[0]);
+	test.starting_y = 0;
 	
+	// triforce(&test);
+
 	scene1->RenderScene();
 	test.RefreshScreen();
 

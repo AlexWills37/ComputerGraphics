@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include "../lib/graphics.h"
 #include <cmath>
+#include <array>
 /*
  * Interpolates a line between a point (i0, d0), and (i1, d1).
  *
@@ -127,4 +128,82 @@ HomCoordinates operator*(TransformMatrix transform, HomCoordinates point)
 		output.data[row] = sum;
 	}
 	return output;
+}
+
+TransformMatrix BuildRotationMatrix(float x, float y, float z)
+{
+	// First initialize all matrices
+	TransformMatrix xRot, yRot, zRot;
+	
+	// FIRST: Set all array values to 0
+	for (int row = 0; row < 4; ++row)
+	{
+		for (int col = 0; col < 4; ++col)
+		{
+			xRot.data[row][col] = 0;
+			yRot.data[row][col] = 0;
+			zRot.data[row][col] = 0;
+		}
+	}
+
+	// X rotation:
+	xRot.data[0][0] = 1;
+	xRot.data[1][1] = std::cos(x);
+	xRot.data[1][2] = std::sin(x);
+	xRot.data[2][1] = - std::sin(x);
+	xRot.data[2][2] = std::cos(x);
+	xRot.data[3][3] = 1;
+
+	// Y rotation:
+	yRot.data[1][1] = 1;
+	yRot.data[0][0] = std::cos(y);
+	yRot.data[0][2] = - std::sin(y);
+	yRot.data[2][0] = std::sin(y);
+	yRot.data[2][2] = std::cos(y);
+	yRot.data[3][3] = 1;
+
+	// Z rotation:
+	zRot.data[2][2] = 1;
+	zRot.data[0][0] = std::cos(z);
+	zRot.data[1][0] = - std::sin(z);
+	zRot.data[0][1] = std::sin(z);
+	zRot.data[1][1] = std::cos(z);
+	zRot.data[3][3] = 1;
+
+	// Combine all rotation
+	TransformMatrix rotation = (zRot * yRot) * xRot;
+	// Put a 1 in the bottom right corner
+	rotation.data[3][3] = 1;
+
+	return rotation;
+}
+
+void NormalizeVector(std::array<float, 3>& vec)
+{
+	// Get magnitude
+	float magnitude = sqrt((vec[0] * vec[0]) + (vec[1] * vec[1]) + (vec[2] * vec[2]));
+	if (magnitude != 0) {
+		vec[0] /= magnitude;
+		vec[1] /= magnitude;
+		vec[2] /= magnitude;
+	}
+}
+
+
+Plane::Plane(float x, float y, float z, float d)
+{
+	std::array<float, 3> normal = {x, y, z};
+	NormalizeVector(normal);
+	this->normal = normal;
+	this->constant = d;
+}
+
+float Plane::SignedDistance(HomCoordinates point)
+{
+	return (
+		point.data[0] * normal[0] +
+		point.data[1] * normal[1] +
+		point.data[2] * normal[2] +
+		constant
+	);
 }

@@ -38,7 +38,7 @@ void GraphicsManager::OpenWindow(int width, int height)
 	this->viewport_width = width / 50;
 	this->viewport_height = height / 50;
 	this->viewport_distance = 5;	// This default viewport distance is arbitrary
-
+	
     this->canvas_width = width;
     this->canvas_height = height;
     
@@ -143,110 +143,7 @@ void GraphicsManager::ClearScreen()
 }
 
 
-/*
- * Keeps the user's window open and allows the user to move the camera in the scene.
- * Use WASD to move on the X/Z plane, E and Q to move up/down on the Y axis,
- * and the arrow keys or IJKL to rotate up/down and left/right.
- */
-void GraphicsManager::StayOpenCameraControls()
-{
-	
 
-	bool running = true;
-	SDL_Keysym key;
-	while(running)
-	{
-
-		// Go through the event queue
-		while ( SDL_PollEvent(&event_handler) )
-		{
-			// Handle the event
-			switch (event_handler.type)
-			{	
-				// Quit event
-				case SDL_QUIT:
-					running = false;
-					std::cout << "~ User has closed the window." << std::endl;
-					break;
-				case SDL_KEYDOWN:
-					key = event_handler.key.keysym;
-
-					//std::cout << "~ User has pressed key: " << key.sym << std::endl;
-					switch (key.sym)
-					{
-						// Move left
-						case SDLK_a:
-							this->main_camera.MovePosition(-0.1, 0, 0);
-							break;
-						// Move back
-						case SDLK_s:
-							this->main_camera.MovePosition(0, 0, -0.1);
-							break;
-						// Move right
-						case SDLK_d:
-							this->main_camera.MovePosition(0.1, 0, 0);
-							break;
-						// Move forward
-						case SDLK_w:
-							this->main_camera.MovePosition(0, 0, 0.1);
-							break;
-						// Move down
-						case SDLK_q:
-							this->main_camera.MovePosition(0, -0.1, 0);
-							break;
-
-						// Move up
-						case SDLK_e:
-							this->main_camera.MovePosition(0, 0.1, 0);
-							break;
-
-						// Rotate up
-						case SDLK_i:
-							// Fall through
-						case SDLK_UP:
-							this->main_camera.Rotate(3.14/60, 0, 0);
-							break;
-
-						// Rotate down
-						case SDLK_k:
-							// Fall through
-						case SDLK_DOWN:
-							this->main_camera.Rotate(-3.14/60, 0, 0);
-							break;
-						// Rotate counter-clockwise
-						case SDLK_j:
-							// Fall through
-						case SDLK_LEFT:
-							this->main_camera.Rotate(0, 3.14/60, 0);
-							break;
-						
-						// Rotate clockwise
-						case SDLK_l:
-							// Fall through
-						case SDLK_RIGHT:
-							this->main_camera.Rotate(0, -3.14/60, 0);
-						default:
-							// Do nothing if key not recognized
-							break;
-					}
-
-					
-
-					break;
-				default:
-					break;
-			}
-		}
-
-		// Clear screen
-		this->ChangeBrushColor(BLACK);
-		this->ClearScreen();
-		// Render new scene
-		this->current_scene.RenderScene();
-		this->RefreshScreen();
-
-	}
-}
 
 
 /*************************************************************/

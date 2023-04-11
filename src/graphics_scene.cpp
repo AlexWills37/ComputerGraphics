@@ -10,18 +10,20 @@
 #include <iostream>
 
 
-void Scene::AddModelInstance(const ModelInstance & to_add)
+void Scene::AddModelInstance(ModelInstance & to_add)
 {
-    this->modelInstances.push_back(to_add);
+    this->modelInstances.push_back(&to_add);
 }
 
 void Scene::RenderScene()
 {
+
 	// Render all of the models
 	for (auto current_model : this->modelInstances)
 	{
-		this->RenderInstance(current_model);
+		this->RenderInstance(*current_model);
 	}
+
 
 }
 
@@ -30,6 +32,7 @@ void Scene::RenderInstance(ModelInstance to_render)
     // Get base model to transform
     Model * model = to_render.model;
 
+	HomCoordinates transformed_points[ model->numVertices ];	// List of points before projection to the screen
     // Get list of 2D points to render eventually
 	Point2D projected_points[ model->numVertices ];
 
@@ -37,9 +40,13 @@ void Scene::RenderInstance(ModelInstance to_render)
 	HomCoordinates newPoint;
 
 	TransformMatrix world_space_transform = TransformMatrix(to_render.transform);	// This converts from model space to world space
+	// TODO: MOVE THIS SHIT BACK ONE FUNCTION
 	TransformMatrix camera_transform = this->main_camera->GetWorldToCameraMatrix();	// This converts from world space to camera space
 
-	// Project all of the points
+
+
+
+	// Convert all of the points to Camera space
 	for (int i = 0; i < model->numVertices; ++i)
 	{
 		// Get the model-space point as homogenous coordinates
@@ -52,9 +59,18 @@ void Scene::RenderInstance(ModelInstance to_render)
 		newPoint = world_space_transform * newPoint;
 		// Apply camera transform
 		newPoint = camera_transform * newPoint;
-        // Apply camera space -> screen space projection
+	
+		transformed_points[i] = newPoint;	// Passed by value
+	}
+
+	// Project all points
+	for (int i = 0; i < model->numVertices; ++i)
+	{
+		newPoint = transformed_points[i];
+		// Apply camera space -> screen space projection
 		projected_points[i] = this->graphics_manager->ProjectVertex(newPoint);
 	}
+
 
 	// Render all triangles
 	for (int i = 0; i < model->numTriangles; ++i)

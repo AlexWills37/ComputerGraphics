@@ -1,18 +1,7 @@
-/* graphics_scene.h
- *
- * This file contains the classes and methods for building 3D scenes to render.
- * A Scene contains a Camera and a list of ModelInstances.
- * A Camera holds a Transform specifying the position/rotation to view the scene from.
- * A Transform specifies the scale, rotation, and translation of an object.
- * A ModelInstance contains a Model to reference and a Transform to specify its location in world space.
- * A Model is a list of points and triangles (which connect points and have a color), where the points
- *      exist in model space (a relative origin)
- * 
- * @author Alex Wills
- * @date March 28, 2023
- */
-#ifndef _GRAPHICS_SCENE_H
-#define _GRAPHICS_SCENE_H
+#ifndef _GRAPHICS_SCENE_PLUS_H
+#define _GRAPHICS_SCENE_PLUS_H
+
+#include "graphics.h"
 #include <vector>
 
 
@@ -98,13 +87,34 @@ struct Model {
     int numTriangles;
 };
 
+class Model {
+    public:
+        Model();
+        ~Model();
+
+
+    private:
+        std::vector<Point3D*> vertices;
+        std::vector<Triangle*> triangles;
+};
+
 /*
  * An instance of a model contains a pointer to a model to use,
  * along with a transform specifying the location of the model in World Space.
  */
-struct ModelInstance {
-    struct Model * model;
-    Transform transform;
+class ModelInstance {
+
+    public:
+        ModelInstance();
+        ~ModelInstance();
+        ModelInstance(Model* model, Transform transform);
+
+
+    private:
+        Model * model;
+        Transform transform;
+        std::vector<int> rejected_triangles;
+        std::vector<Triangle> new_triangles;
 };
 
 // -------- Rendering a Scene --------
@@ -302,5 +312,6 @@ class Scene
 
         
 };
+
 
 #endif

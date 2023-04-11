@@ -22,6 +22,7 @@
 #include "graphics_math.h"
 #include "graphics_utility.h"
 #include "graphics_scene.h"
+#include "graphics_scene_plus.h"
 
 // Color constants
 static constexpr Color RED = {255, 0, 0};
@@ -33,6 +34,7 @@ static constexpr Color INDIGO = {0, 0, 255};
 static constexpr Color PURPLE = {127, 0, 255};
 static constexpr Color BLACK = {0, 0, 0};
 static constexpr Color WHITE = {255, 255, 255};
+static constexpr Color REEEEEEEEEEEE = {100, 200, 300};
 
 
 /*
@@ -52,6 +54,7 @@ private:
 	// Objects from SDL for handling graphics
 	SDL_Renderer* renderer;
 	SDL_Window* window;
+	// TODO: SINCE WHEN ARE EVENTS GRAPHICS?
 	SDL_Event event_handler;
 
 	float viewport_width, viewport_height, viewport_distance;	// Dimensions of the viewport
@@ -169,7 +172,9 @@ public:
 
 // 3D Drawing
 public:
-	
+	/***************************************
+	************* 3D DRAWING WOW ***********
+	****************************************/
 	/*
 	 * Sets the distance between the viewport and the camera.
 	 *
@@ -209,6 +214,11 @@ public:
 	 */
 	Scene* GetCurrentScene();
 
+// Things added for fun
+public:
+	ModelInstance * rotate_cube;
+	float starting_y;
+	void RotateCube(ModelInstance* cube);
 
 };
 

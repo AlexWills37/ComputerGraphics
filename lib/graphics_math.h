@@ -8,6 +8,7 @@
 #ifndef _GRAHPICS_MATH_H
 #define _GRAPHICS_MATH_H
 
+#include <array>
 
 /*
  * Interpolate a line between two variables.
@@ -59,6 +60,7 @@ struct HomCoordinates {
     float data[4];
 };
 
+TransformMatrix BuildRotationMatrix(float x, float y, float z);
 
 /*
  * Multiplies two 4x4 matrices (TransformMatrix objects).
@@ -66,11 +68,30 @@ struct HomCoordinates {
  */
 TransformMatrix operator*(TransformMatrix, TransformMatrix);
 
+
 /*
  * Applies a transformation on a set of coordinates.
  * This is done by multiplying a 4x4 TransformMatrix with a 4x1 Homogenous Coordinates matrix.
  */
 HomCoordinates operator*(TransformMatrix, HomCoordinates);
+
+// float& HomCoordinates::operator[](int index);
+
+void NormalizeVector(std::array<float, 3> & vec);
+
+class Plane {
+    public:
+        Plane();
+        Plane(float x, float y, float z, float d);
+        ~Plane();
+
+    private:
+        std::array<float, 3> normal;
+        float constant;
+
+    public:
+        float SignedDistance(HomCoordinates point);
+};
 
 
 #endif

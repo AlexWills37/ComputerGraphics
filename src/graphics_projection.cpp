@@ -43,7 +43,7 @@ Point2D GraphicsManager::ProjectVertex(Point3D vertex)
 {
     float viewport_x = vertex.x * this->viewport_distance / vertex.z;
     float viewport_y = vertex.y * this->viewport_distance / vertex.z;
-
+    
     return ViewportToCanvas(viewport_x, viewport_y, this->viewport_width, this->viewport_height,
                             this->canvas_width, this->canvas_height);
 }
