@@ -34,10 +34,15 @@ void GraphicsManager::OpenWindow(int width, int height)
 		std::cout << "!!ERROR: " << SDL_GetError() << std::endl;
 	}
 
-	// Also set viewport dimensions
-	this->viewport_width = width / 50;
-	this->viewport_height = height / 50;
-	this->viewport_distance = 5;	// This default viewport distance is arbitrary
+	// Also set viewport dimensions for camera
+	float viewport_distance = 3;
+
+	float viewport_height = 0.5;
+	float aspect_ratio = float(width) / float(height);
+	float viewport_width = viewport_height * aspect_ratio;
+
+	this->main_camera = Camera(width, height, viewport_width, viewport_height, viewport_distance);
+
 	
     this->canvas_width = width;
     this->canvas_height = height;
@@ -49,6 +54,8 @@ void GraphicsManager::OpenWindow(int width, int height)
     std::cout << "~ Screen dimensions: starting at (" << this->max_screen_x << ", " << this->max_screen_y
         << ") and ending at (" << (this->max_screen_x - this->canvas_width) << ", "
         << (this->max_screen_y - this->canvas_height) << ")" << std::endl;
+
+	// Create camera with a starting viewport size based on the canvas size
 
 }
 
@@ -77,10 +84,19 @@ void GraphicsManager::StayOpenBlocking()
 			switch (event_handler.type)
 			{	
 				// Quit event
+				case SDL_KEYDOWN:
+					if (event_handler.key.keysym.sym == SDLK_ESCAPE)
+					{
+						// fall through
+					} else {
+						break;
+					}
 				case SDL_QUIT:
 					running = false;
 					std::cout << "~ User has closed the window." << std::endl;
 					break;
+
+				
 				default:
 					break;
 			}

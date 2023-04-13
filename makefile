@@ -9,7 +9,7 @@ ODIR = ./obj
 LDIR = ./lib
 SDIR = ./src
 LIBS = -lSDL2
-DEPS = lib/graphics.h lib/graphics_math.h lib/graphics_utility.h
+DEPS = lib/graphics.h lib/graphics_math.h lib/graphics_utility.h lib/graphics_scene.h 
 
 SRC = $(wildcard $(SDIR)/*.cpp)
 

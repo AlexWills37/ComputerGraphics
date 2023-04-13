@@ -22,7 +22,7 @@
 #include "graphics_math.h"
 #include "graphics_utility.h"
 #include "graphics_scene.h"
-#include "graphics_scene_plus.h"
+// #include "graphics_scene_plus.h"
 
 // Color constants
 static constexpr Color RED = {255, 0, 0};
@@ -57,7 +57,7 @@ private:
 	// TODO: SINCE WHEN ARE EVENTS GRAPHICS?
 	SDL_Event event_handler;
 
-	float viewport_width, viewport_height, viewport_distance;	// Dimensions of the viewport
+	// float viewport_width, viewport_height, viewport_distance;	// Dimensions of the viewport
 	int canvas_width, canvas_height;		// Dimsnesions of the canvas (screen/window)
 	int max_screen_x, max_screen_y;			// Locations of the top right corner, when the center of the screen is 0,0
 
@@ -175,22 +175,22 @@ public:
 	/***************************************
 	************* 3D DRAWING WOW ***********
 	****************************************/
-	/*
-	 * Sets the distance between the viewport and the camera.
-	 *
-	 * @param distance - the distance (in world units) from the camera that the viewport is.
-	 */
-	void SetViewportDistance(float distance);
+	// /*
+	//  * Sets the distance between the viewport and the camera.
+	//  *
+	//  * @param distance - the distance (in world units) from the camera that the viewport is.
+	//  */
+	// void SetViewportDistance(float distance);
 	
-	/*
-	 * Converts a point from 3D space to canvas space, based on this graphic
-	 * manager's viewport. Assumes the camera is at (0, 0) facing towards the positive Z direction.
-	 *
-	 * @param vertex - the 3D point to render
-	 * @return the 3D point's location on the 2D canvas, as seen through the viewport
-	 */
-	Point2D ProjectVertex(Point3D vertex);
-	Point2D ProjectVertex(HomCoordinates vertex);
+	// /*
+	//  * Converts a point from 3D space to canvas space, based on this graphic
+	//  * manager's viewport. Assumes the camera is at (0, 0) facing towards the positive Z direction.
+	//  *
+	//  * @param vertex - the 3D point to render
+	//  * @return the 3D point's location on the 2D canvas, as seen through the viewport
+	//  */
+	// Point2D ProjectVertex(Point3D vertex);
+	// Point2D ProjectVertex(HomCoordinates vertex);
 
 
 	// void RenderScene(Scene scene);

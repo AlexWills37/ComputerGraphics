@@ -31,15 +31,27 @@ void GraphicsManager::DrawLine(Point2D p0, Point2D p1)
 
 		// Make x the dependent variable and interpolate
 		int num_values = p1.x - p0.x + 1;
-		float y_values[num_values];
-		float* y_values_ptr = &(y_values[0]);
-		Interpolate(p0.x, p0.y, p1.x, p1.y, y_values_ptr);
-
-		// Draw the line
-		for (int i = 0; i < num_values; ++i)
+		// TODO: Fix this DUCTTAPE code
+		// Manual check to make sure that the line is for real
+		if (num_values > 0 && num_values < 10000)
 		{
-		    this->PutPixel(p0.x + i, int(y_values[i]));
+			float y_values[num_values];
+			float* y_values_ptr = &(y_values[0]);
+			Interpolate(p0.x, p0.y, p1.x, p1.y, y_values_ptr);
+
+			// Draw the line
+			for (int i = 0; i < num_values; ++i)
+			{
+				this->PutPixel(p0.x + i, int(y_values[i]));
+			}
+
+		} else 
+		{
+			// std::cout << "What! Horizontal Line with " << num_values << " points" << std::endl;
+			// std::cout << "\tp1 y: " << p1.y << " - p0.y: " << p0.y << std::endl;
+
 		}
+
 	}
 	else
 	{
@@ -52,14 +64,25 @@ void GraphicsManager::DrawLine(Point2D p0, Point2D p1)
 
 		// Make y the dependent variable and interpolate
 		int num_values = p1.y - p0.y + 1;
-		float x_values[num_values];
-		float* x_values_ptr = &(x_values[0]);
-		Interpolate(p0.y, p0.x, p1.y, p1.x, x_values_ptr);
-
-		// Draw the line
-		for (int i = 0; i < num_values; ++i)
+		// TODO: Fix this DUCTTAPE code
+		// Manual check to make sure that the line is for real
+		if (num_values > 0 && num_values < 10000)
 		{
-			this->PutPixel(int(x_values[i]), p0.y + i);
+
+			float x_values[num_values];
+			float* x_values_ptr = &(x_values[0]);
+			Interpolate(p0.y, p0.x, p1.y, p1.x, x_values_ptr);
+
+			// Draw the line
+			for (int i = 0; i < num_values; ++i)
+			{
+				this->PutPixel(int(x_values[i]), p0.y + i);
+			}
+		}
+		else 
+		{
+			// std::cout << "What! Vertical Line with " << num_values << " points" << std::endl;
+			// std::cout << "\tp1 y: " << p1.y << " - p0.y: " << p0.y << std::endl;
 		}
 	}
 }
