@@ -9,15 +9,6 @@
 
 #include "../lib/graphics.h"
 
-/*
- * Sets the distance between the viewport and the camera.
- *
- * @param distance - the distance (in world units) from the camera that the viewport is.
- */
-void GraphicsManager::SetViewportDistance(float distance)
-{
-    this->viewport_distance = distance;
-}
 
 /*
  * Convert a point on the viewport to a point on the canvas.
@@ -39,10 +30,13 @@ Point2D ViewportToCanvas(float x, float y, float viewport_width, float viewport_
  * @param vertex - the 3D point to render
  * @return the 3D point's location on the 2D canvas, as seen through the viewport
  */
-Point2D GraphicsManager::ProjectVertex(Point3D vertex)
+Point2D Camera::ProjectVertex(Point3D vertex)
 {
     float viewport_x = vertex.x * this->viewport_distance / vertex.z;
     float viewport_y = vertex.y * this->viewport_distance / vertex.z;
+
+    // std::cout << "Viewport: " << viewport_width << " x " << viewport_height << ": " << viewport_distance << std::endl;
+    // std::cout << "Canvas: " << canvas_width << " x " << canvas_height << std::endl;
     
     return ViewportToCanvas(viewport_x, viewport_y, this->viewport_width, this->viewport_height,
                             this->canvas_width, this->canvas_height);
@@ -53,7 +47,7 @@ Point2D GraphicsManager::ProjectVertex(Point3D vertex)
  * Converts a point from 3D space to canvas space, based on this graphic
  * manager's viewport.
  */
-Point2D GraphicsManager::ProjectVertex(HomCoordinates vertex)
+Point2D Camera::ProjectVertex(HomCoordinates vertex)
 {
     Point3D p_vertex = {vertex.data[0], vertex.data[1], vertex.data[2]};
     return this->ProjectVertex(p_vertex);

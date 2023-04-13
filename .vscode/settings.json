@@ -46,6 +46,27 @@
         "list": "cpp",
         "unordered_map": "cpp",
         "vector": "cpp",
-        "xhash": "cpp"
-    }
+        "xhash": "cpp",
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "cstdarg": "cpp",
+        "cwctype": "cpp",
+        "deque": "cpp",
+        "map": "cpp",
+        "string": "cpp",
+        "algorithm": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "string_view": "cpp",
+        "numbers": "cpp",
+        "cinttypes": "cpp"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/mnt/d/College Sem6/ComputerGraphics",
+            "binaryPath": "/mnt/d/College Sem6/ComputerGraphics/main.out",
+            "binaryArgs": []
+        }
+    ]
 }

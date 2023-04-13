@@ -130,6 +130,41 @@ HomCoordinates operator*(TransformMatrix transform, HomCoordinates point)
 	return output;
 }
 
+HomCoordinates operator+(HomCoordinates p0, HomCoordinates p1)
+{
+	HomCoordinates output;
+	output.data[0] = p0.data[0] + p1.data[0];
+	output.data[1] = p0.data[1] + p1.data[1];
+	output.data[2] = p0.data[2] + p1.data[2];
+
+	return output;
+}
+
+HomCoordinates operator-(HomCoordinates p0, HomCoordinates p1)
+{
+	HomCoordinates output;
+	output.data[0] = p0.data[0] - p1.data[0];
+	output.data[1] = p0.data[1] - p1.data[1];
+	output.data[2] = p0.data[2] - p1.data[2];
+
+	return output;
+}
+
+HomCoordinates operator*(float f, HomCoordinates p1)
+{
+	HomCoordinates output;
+	output.data[0] = f * p1.data[0];
+	output.data[1] = f * p1.data[1];
+	output.data[2] = f * p1.data[2];
+
+	return output;
+}
+
+HomCoordinates operator*(HomCoordinates p0, float f)
+{
+	return f * p0;
+}
+
 TransformMatrix BuildRotationMatrix(float x, float y, float z)
 {
 	// First initialize all matrices
@@ -198,6 +233,12 @@ Plane::Plane(float x, float y, float z, float d)
 	this->constant = d;
 }
 
+Plane::Plane(const Plane & to_copy)
+{
+	this->normal = to_copy.normal;
+	this->constant = to_copy.constant;
+}
+
 float Plane::SignedDistance(HomCoordinates point)
 {
 	return (
@@ -206,4 +247,16 @@ float Plane::SignedDistance(HomCoordinates point)
 		point.data[2] * normal[2] +
 		constant
 	);
+}
+
+HomCoordinates Plane::Intersection(HomCoordinates pA, HomCoordinates pB)
+{
+	HomCoordinates diff = pA - pB;
+	float t = (
+		(-this->constant - (normal[0] * pA.data[0] + normal[1] * pA.data[1] + normal[2] * pA.data[2])) /
+		(normal[0] * diff.data[0] + normal[1] * diff.data[1] + normal[2] * diff.data[2])
+	);
+
+	return pA + (t * diff);
+
 }

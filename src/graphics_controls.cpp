@@ -44,6 +44,8 @@ void GraphicsManager::StayOpenCameraControls()
 	float modifier = 1;
 	float rotation_speed = 0.02;
 
+	// int * test = new int();
+
 	while (running)
 	{
 
@@ -56,6 +58,9 @@ void GraphicsManager::StayOpenCameraControls()
 
 		if (delta_time >= time_between_frames)
 		{
+			// delete test;
+			// test = new int();
+			// std::cout << test << std::endl;
 			previous_clock = current_clock;
 			// Frame is starting; do frame-based things
 

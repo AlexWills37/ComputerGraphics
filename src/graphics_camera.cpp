@@ -95,3 +95,19 @@ void Camera::RotateVertically(float rotation)
 
     // Undo the rotation that lined the global X axis up
 }
+
+void Camera::GenerateClippingPlanes()
+{
+    // Create clipping planes
+    // std::cout << "Generating clipping planes for the camera." << std::endl;
+
+
+    float delta_height = (this->viewport_height) / 2.0;
+    float delta_width = (this->viewport_width) / 2.0;
+
+    this->clipping_planes[0] = Plane(0, 0, 1, -this->viewport_distance);    // Front plane
+    this->clipping_planes[1] = Plane(0, -this->viewport_distance, delta_height, 0);   // Top
+    this->clipping_planes[3] = Plane(0, this->viewport_distance, delta_height, 0);   // Bottom
+    this->clipping_planes[2] = Plane(this->viewport_distance, 0, delta_width, 0);  // Left
+    this->clipping_planes[4] = Plane(-this->viewport_distance, 0, delta_width, 0);  // Right
+}

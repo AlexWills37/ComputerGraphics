@@ -34,6 +34,7 @@ void GraphicsManager::DrawWireTriangle(Point2D p0, Point2D p1, Point2D p2, Color
 {
 	this->ChangeBrushColor(color);
 	this->DrawWireTriangle(p0, p1, p2);
+	// std::cout << "Drawing: " << p0.x << ", " << p0.y << "; " <<p1.x << ", " << p1.y << "; " << p2.x << ", " << p2.y << "; " << std::endl;
 }
 
 /*

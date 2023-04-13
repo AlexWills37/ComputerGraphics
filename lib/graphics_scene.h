@@ -88,23 +88,107 @@ struct Triangle {
  * and a list of triangles (containing the indices of the points to link together).
  */
 struct Model {
-    // TODO: USE STD::VECTOR
-    struct Point3D * vertices;  // Array of Point3D objects
-    // TODO: USE STD::VECTOR
-    int numVertices;    // TODO: USE STD::VECTOR
-
-    // TODO: USE STD::VECTOR
-    struct Triangle * triangles;    // Array of triangle objects
-    int numTriangles;
+    std::vector<Point3D> vertices;
+    std::vector<Triangle> triangles;
 };
 
 /*
  * An instance of a model contains a pointer to a model to use,
  * along with a transform specifying the location of the model in World Space.
  */
-struct ModelInstance {
-    struct Model * model;
-    Transform transform;
+class ModelInstance {
+    
+    public:
+        ModelInstance()
+        {}
+        ModelInstance(Model * model, Transform & transform)
+        {
+            this->model = model;
+            this->transform = transform;
+        }
+
+        // Default copy constructor
+        // ModelInstance(const ModelInstance & to_copy)
+        // {        }
+
+        // ~ModelInstance();
+
+    public:
+        Model * GetModel()
+        {
+            return this->model;
+        }
+
+    protected:
+
+        struct Model * model;
+        Transform transform;
+
+};
+
+class RenderableModelInstance: public ModelInstance {
+    friend class Scene;
+    public:
+
+        RenderableModelInstance(ModelInstance * instance): ModelInstance(*instance)
+        {
+            this->is_rejected = false;  
+            this->triangles = this->model->triangles;
+            // std::cout << "Creating Renderable Model Instance with " << triangles.size() << " triangles" << std::endl;
+        }
+
+        // RenderableModelInstance();
+        // ~RenderableModelInstance();
+
+
+    private:
+        std::vector<HomCoordinates> points;
+        std::vector<Triangle> triangles;
+        bool is_rejected;
+        HomCoordinates bounding_sphere_center;
+        float bounding_sphere_radius;
+
+        // These following variables are used as buffers for clipping triangles
+        std::vector<Triangle> new_tris; // List of new triangles to add to this render instance
+        std::vector<HomCoordinates> new_points; // List of new points to add to this render instance, for the new triangles
+        int new_point_start_index = this->triangles.size(); // Index to start building new triangles
+
+    public:
+        void GenerateWorldspacePoints();
+
+        void ApplyTransform(TransformMatrix transform);
+
+        std::vector<HomCoordinates> * GetPoints()
+        {
+            return &(this->points);
+        }
+
+        void GenerateBoundingSphere();
+
+        float GetBoundingSphereRadius()
+        {
+            return this->bounding_sphere_radius;
+        }
+
+        HomCoordinates GetBoundingSphereCenter()
+        {
+            return this->bounding_sphere_center;
+        }
+
+        bool GetIsRejected()
+        {
+            return this->is_rejected;
+        }
+
+        void Reject()
+        {
+            this->is_rejected = true;
+        }
+
+        void ClipTrianglesAgainstPlane(Plane * plane);
+
+        bool ClipTriangle(Triangle to_clip, Plane * plane);
+    
 };
 
 // -------- Rendering a Scene --------
@@ -122,18 +206,35 @@ class Camera
     private: // Private member variables
         Transform camera_transform; // This is the transform of the camera
         float viewport_distance, viewport_width, viewport_height;
+        float canvas_width, canvas_height;
+        std::array<Plane, 5> clipping_planes;
 
     public: // Constructor
         
         /*
-         * Create a camera at (0, 0, 0) facing the positive Z direction.
+         * Creates a camera based on canvas dimensions and viewport dimensions. By default, the camera
+         * will be placed at (0, 0, 0) facing the positive Z direction.
          */
-        Camera()
+        Camera(int canvas_width, int canvas_height, float viewport_width, float viewport_height, float viewport_distance)
+        {
+            this->canvas_width = canvas_width;
+            this->canvas_height = canvas_height;
+            this->viewport_width = viewport_width;
+            this->viewport_height = viewport_height;
+            this->viewport_distance = viewport_distance;
+
+            this->camera_transform = Transform();
+            this->GenerateClippingPlanes();
+        }
+
+        /*
+         * Create a camera at (0, 0, 0) facing the positive Z direction.
+         * This constructor should never be called intentionally, since it sets the canvas
+         * and viewport dimensions to 1x1.
+         */
+        Camera(): Camera(1, 1, 1.0, 1.0, 1.0)
         {
             this->camera_transform = Transform();   // The scale will always be 1
-            this->viewport_distance = 5;
-            this->viewport_width = 20;
-            this->viewport_height = 10;
         }
 
         /*
@@ -149,11 +250,18 @@ class Camera
             this->camera_transform.rotation[1] = ry;
             this->camera_transform.rotation[2] = rz;
         }
+
     public: // Public methods
+
+        Plane * GetClippingPlane(int index)
+        {
+            return &(this->clipping_planes[index]);
+        }
 
         void SetViewportDistance(float new_dist)
         {
             this->viewport_distance = new_dist;
+            this->GenerateClippingPlanes();
         }
 
         void SetViewportSize(float width, float height)
@@ -191,6 +299,16 @@ class Camera
         {
             return &(this->camera_transform);
         }
+
+        /*
+        * Converts a point from 3D space to canvas space, based on this camera's
+        * viewport. Assumes the camera is at (0, 0) facing towards the positive Z direction.
+        *
+        * @param vertex - the 3D point to render
+        * @return the 3D point's location on the 2D canvas, as seen through the viewport
+        */
+        Point2D ProjectVertex(Point3D vertex);
+        Point2D ProjectVertex(HomCoordinates vertex);
 
 
         /*
@@ -232,6 +350,9 @@ class Camera
          * Rotates the camera on the X axis locally. Assumes that the x axis is parallel to the XZ plane.
          */
         void RotateVertically(float rotation);
+
+    private:
+        void GenerateClippingPlanes();
 };
 
 // Forward declare graphics manager
@@ -262,6 +383,7 @@ class Scene
         {
             this->main_camera = main_camera;
             this->graphics_manager = graphics_manager;
+            this->is_original_scene = true;
         }
 
         /*
@@ -271,6 +393,8 @@ class Scene
          */
         Scene() : Scene(nullptr, nullptr)
         {}
+
+        ~Scene();
 
     // Public methods
     public:
@@ -291,16 +415,24 @@ class Scene
         /*
          * Render an individual ModelInstance to the screen.
          */
-        void RenderInstance(ModelInstance to_render);
+        void RenderInstance(RenderableModelInstance * to_render);
 
         /*
          * Based on a list of projected vertices, render an individual triangle to the screen.
          */
         void RenderTriangle(Triangle triangle, Point2D projected_vertices[]);
 
-        Scene ClipScene(Scene scene);
+
+        static void ClipInstance(RenderableModelInstance & instance, std::array<Plane*, 5> planes);
+
+        static void ClipInstanceAgainstPlane(RenderableModelInstance & instance, Plane* plane);
+
+        bool is_original_scene;
+
 
         
 };
+
+
 
 #endif

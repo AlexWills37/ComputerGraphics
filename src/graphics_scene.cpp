@@ -7,7 +7,20 @@
  */
 
 #include "../lib/graphics.h"
+#include <unistd.h>
 #include <iostream>
+
+Scene::~Scene()
+{
+	if (!is_original_scene){
+		for (ModelInstance * pointer : this->modelInstances)
+		{
+			if (pointer != nullptr)
+				delete pointer;
+		}
+	}
+}
+
 
 
 void Scene::AddModelInstance(ModelInstance & to_add)
@@ -17,65 +30,137 @@ void Scene::AddModelInstance(ModelInstance & to_add)
 
 void Scene::RenderScene()
 {
+	// Get planes for clipping
+	// std::vector<Plane> planes;
+	// Plane one = Plane(0, 0, 1, - this->main_camera->GetViewportDistance());
+	// planes.push_back(one);
 
-	// Render all of the models
-	for (auto current_model : this->modelInstances)
+
+	// Plane left = Plane((1 / std::sqrt(2)), 0, (1 / std::sqrt(2)), 0);
+	// Plane right = Plane((-1 / std::sqrt(2)), 0, (1 / std::sqrt(2)), 0);
+	// Plane top = Plane( 0, (-1 / std::sqrt(2)), (1 / std::sqrt(2)), 0);
+	// Plane bottom = Plane( 0, (1 / std::sqrt(2)), (1 / std::sqrt(2)), 0);
+
+	// planes.push_back(left);
+	// planes.push_back(right);
+	// planes.push_back(top);
+	// planes.push_back(bottom);
+
+	std::array<Plane * , 5> planes;
+	// std::cout << "Rendering Scene with " << modelInstances.size() << " model instances" << std::endl;
+	// std::cout << "Clipping planes: " << std::endl;
+	for (int i = 0; i < 5; ++i)
 	{
-		this->RenderInstance(*current_model);
+		planes[i] = this->main_camera->GetClippingPlane(i);
+		// std::cout << "\t";
+		// planes[i]->Print();
 	}
+
+
+
+	// Get camera transform (this will not change during the render)
+	TransformMatrix world_to_cameraspace = this->main_camera->GetWorldToCameraMatrix();
+	RenderableModelInstance * clipped_instance;
+	for (ModelInstance * instance : this->modelInstances)
+	{
+		// std::cout << "Rendering instance... Generating points..." << std::endl;
+		// Create a copy of the instance for clipping
+		clipped_instance = new RenderableModelInstance(instance);
+		// Put instance in camera space
+		clipped_instance->GenerateWorldspacePoints();
+		clipped_instance->ApplyTransform(world_to_cameraspace);
+		std::vector<HomCoordinates> ps = *(clipped_instance->GetPoints());
+		// std::cout << ps.size() << " points generated for the base model" << std::endl;
+		// std::cout << "Points in camera space: " << std::endl;
+		// for (HomCoordinates c : ps)
+		// {
+		// 	std::cout << "\t(" << c.data[0] << ", " << c.data[1] << ", " <<c.data[2] << ")" << std::endl;
+		// }
+
+		// Clip the instance
+		// std::cout << "Clipping instance..." << std::endl;
+		Scene::ClipInstance(*clipped_instance, planes);
+		// std::cout << "Instance was " << (clipped_instance->GetIsRejected() ? "" : "not") << " rejected" << std::endl;
+		// std::cout << "Instance now has " << clipped_instance->GetPoints()->size() << " points" << std::endl;
+		// Render the instance if it is not clipped
+		if (!clipped_instance->GetIsRejected())
+		{
+			RenderInstance(clipped_instance);
+		}
+
+		// sleep(5);
+	}
+
 
 
 }
 
-void Scene::RenderInstance(ModelInstance to_render)
+void Scene::ClipInstance(RenderableModelInstance & instance, std::array<Plane*, 5> planes)
 {
-    // Get base model to transform
-    Model * model = to_render.model;
-
-	HomCoordinates transformed_points[ model->numVertices ];	// List of points before projection to the screen
-    // Get list of 2D points to render eventually
-	Point2D projected_points[ model->numVertices ];
-
-    // We will be working with homoogenous coordinates for transforming our points
-	HomCoordinates newPoint;
-
-	TransformMatrix world_space_transform = TransformMatrix(to_render.transform);	// This converts from model space to world space
-	// TODO: MOVE THIS SHIT BACK ONE FUNCTION
-	TransformMatrix camera_transform = this->main_camera->GetWorldToCameraMatrix();	// This converts from world space to camera space
-
-
-
-
-	// Convert all of the points to Camera space
-	for (int i = 0; i < model->numVertices; ++i)
+	// Clip against all of the planes, stopping if the instance should be rejected
+	instance.GenerateBoundingSphere();
+	// std::cout << "Clipping against " << planes.size() << " planes" << std::endl;
+	for (int i = 0; i < planes.size() && !instance.GetIsRejected(); ++i)
 	{
-		// Get the model-space point as homogenous coordinates
-		newPoint.data[0] = model->vertices[i].x;
-		newPoint.data[1] = model->vertices[i].y;
-		newPoint.data[2] = model->vertices[i].z;
-		newPoint.data[3] = 1;
-		
-		// Apply matrix to convert to world space
-		newPoint = world_space_transform * newPoint;
-		// Apply camera transform
-		newPoint = camera_transform * newPoint;
-	
-		transformed_points[i] = newPoint;	// Passed by value
+		Scene::ClipInstanceAgainstPlane(instance, planes[i]);
+		if (instance.GetIsRejected()){
+			std::cout << "\tBounding sphere rejected by plane: " << i << std::endl;
+		}
 	}
 
-	// Project all points
-	for (int i = 0; i < model->numVertices; ++i)
+}
+
+void Scene::ClipInstanceAgainstPlane(RenderableModelInstance & instance, Plane* plane)
+{
+	float distance = plane->SignedDistance(instance.GetBoundingSphereCenter());
+	float sphere_radius = instance.GetBoundingSphereRadius();
+	if (distance > sphere_radius)
 	{
-		newPoint = transformed_points[i];
+		// This object is in the bounds entirely!! The instance will keep its normal triangles <3
+		// std::cout << "\t\tInstance is completely in bounds of this plane!" << std::endl;
+		instance.triangles = instance.model->triangles;
+	} else if (distance < -sphere_radius)
+	{
+		// std::cout << "\t\tInstance is completely out of bounds of this plane." << std::endl;
+		// This object is entirely out of bounds...
+		instance.Reject();
+	} else {
+		// This object is partially in bounds. WE MUST CLIP THE TRIANGLES NOW!!!
+		// std::cout << "\t\tInstance is partially in bounds with this plane..." << std::endl;
+		instance.ClipTrianglesAgainstPlane(plane);
+	}
+
+}
+
+
+
+void Scene::RenderInstance(RenderableModelInstance * to_render)
+{
+
+	// std::cout << "Rendering instance..." << std::endl;
+	// The points in the model instance should at this point be in camera space,
+	// having the local transform and the camera transform applied
+
+
+	// Project all points from the model instance
+	HomCoordinates newPoint;
+	std::vector<HomCoordinates> points = *(to_render->GetPoints());
+	// std::cout << "\t" << points.size() << " points to project..." << std::endl;
+	Point2D projected_points[ points.size() ];
+	for (int i = 0; i < points.size(); ++i)
+	{
 		// Apply camera space -> screen space projection
-		projected_points[i] = this->graphics_manager->ProjectVertex(newPoint);
+		projected_points[i] = this->main_camera->ProjectVertex(points[i]);
+		// std::cout << "\t\tProjection: (" << projected_points[i].x << ", " << projected_points[i].y << ")" << std::endl;
 	}
 
 
 	// Render all triangles
-	for (int i = 0; i < model->numTriangles; ++i)
+	std::vector<Triangle> triangles = to_render->triangles;
+	// std::cout << "\tRendering " << triangles.size() << " triangles..." << std::endl;
+	for (int i = 0; i < triangles.size(); ++i)
 	{
-		this->RenderTriangle(model->triangles[i], projected_points);
+		this->RenderTriangle(triangles[i], projected_points);
 	} 
 }
 
@@ -84,6 +169,7 @@ void Scene::RenderTriangle(Triangle triangle, Point2D projected_vertices[])
     this->graphics_manager->DrawWireTriangle(    
 		projected_vertices[triangle.p0], projected_vertices[triangle.p1], projected_vertices[triangle.p2],
 		triangle.color);
+
 }
 
 

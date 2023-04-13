@@ -9,6 +9,7 @@
 #define _GRAPHICS_MATH_H
 
 #include <array>
+#include <iostream>
 
 /*
  * Interpolate a line between two variables.
@@ -75,15 +76,32 @@ TransformMatrix operator*(TransformMatrix, TransformMatrix);
  */
 HomCoordinates operator*(TransformMatrix, HomCoordinates);
 
+HomCoordinates operator+(HomCoordinates, HomCoordinates);
+HomCoordinates operator-(HomCoordinates, HomCoordinates);
+HomCoordinates operator*(float, HomCoordinates);
+HomCoordinates operator*(HomCoordinates, float);
+
 // float& HomCoordinates::operator[](int index);
 
 void NormalizeVector(std::array<float, 3> & vec);
 
 class Plane {
+    friend class RenderableModelInstance;
     public:
-        Plane();
         Plane(float x, float y, float z, float d);
-        ~Plane();
+        Plane(): Plane(0, 0, 0, 0)
+        {}
+        ~Plane()
+        {}
+
+        Plane(const Plane & to_copy);
+
+        void Print()
+        {
+            std::cout << "Plane info" << std::endl;
+            std::cout << "\tN = " << normal[0] << ", " << normal[1] << ", " << normal[2] << std::endl;
+            std::cout << "\tConstant: " << constant << std::endl;
+        }
 
     private:
         std::array<float, 3> normal;
@@ -91,6 +109,8 @@ class Plane {
 
     public:
         float SignedDistance(HomCoordinates point);
+
+        HomCoordinates Intersection(HomCoordinates pA, HomCoordinates pB);
 };
 
 
