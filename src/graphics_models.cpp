@@ -111,7 +111,7 @@ void RenderableModelInstance::ClipTrianglesAgainstPlane(Plane* plane)
     
     for (HomCoordinates point : new_points)
     {
-        std::cout << "\t" << point.data[0] << ", " << point.data[1] << ", " << point.data[2] << std::endl;
+        // std::cout << "\t" << point.data[0] << ", " << point.data[1] << ", " << point.data[2] << std::endl;
         this->points.push_back(point);
         
     }

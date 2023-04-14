@@ -48,8 +48,47 @@ float clamp(float value, float low, float high);
  * Always multiply with the TransformMatrix on the left side, and the HomCoordinates
  * on the right.
  */
-struct TransformMatrix {
-    float data[4][4];
+class TransformMatrix {
+    
+    // Member variables
+    private:
+        float data[4][4];
+    
+    // Constructors
+    public: 
+        /*
+         * Default Constructor. Initializes a matrix will 0 in every element.
+         */
+        TransformMatrix()
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                for (int j = 0; j < 4; ++j)
+                {
+                    this->data[i][j] = 0;
+                }
+            }
+        }
+
+    // Operators
+    public: 
+        /*
+        * Multiplies two 4x4 matrices (TransformMatrix objects).
+        * NOT commutative. A * B != B * A
+        */
+        TransformMatrix operator*(const TransformMatrix&);
+
+        float& operator()(int row, int column)
+        {
+            return this->data[row][column];
+        }
+
+        float operator()(int row, int column) const
+        {
+            return this->data[row][column];
+        }
+
+
 };
 
 /*
@@ -57,29 +96,61 @@ struct TransformMatrix {
  * This is most often a 3D point ( the fourth element != 0 ),
  * but can also be a vector ( the fourth element == 0 ).
  */
-struct HomCoordinates {
-    float data[4];
+class HomCoordinates {
+    // Member variables
+    private:
+        float data[4];
+
+    // Constructors
+    public:
+        /*
+         * Default constructor. Initializes a 0 vector (0, 0, 0, 0)
+         */
+        HomCoordinates()
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                this->data[i] = 0;
+            }
+        }
+
+    // Operators
+    public:
+        
+        // Index operators to access the data in this object
+        float& operator[](int index)
+        {
+            return this->data[index];
+        }
+
+        float operator[](int index) const
+        {
+            return this->data[index];
+        }
+
+        // Arithmetic operators
+        HomCoordinates operator+(const HomCoordinates&, const HomCoordinates&);
+        HomCoordinates operator-(const HomCoordinates&, const HomCoordinates&);
+        HomCoordinates operator*(float, const HomCoordinates&);
+        HomCoordinates operator*(const HomCoordinates&, float);
+
 };
 
 TransformMatrix BuildRotationMatrix(float x, float y, float z);
 
-/*
- * Multiplies two 4x4 matrices (TransformMatrix objects).
- * NOT commutative. A * B != B * A
- */
-TransformMatrix operator*(TransformMatrix, TransformMatrix);
+
 
 
 /*
  * Applies a transformation on a set of coordinates.
  * This is done by multiplying a 4x4 TransformMatrix with a 4x1 Homogenous Coordinates matrix.
  */
-HomCoordinates operator*(TransformMatrix, HomCoordinates);
+HomCoordinates operator*(const TransformMatrix&, const HomCoordinates&);
 
-HomCoordinates operator+(HomCoordinates, HomCoordinates);
-HomCoordinates operator-(HomCoordinates, HomCoordinates);
-HomCoordinates operator*(float, HomCoordinates);
-HomCoordinates operator*(HomCoordinates, float);
+// HomCoordinates operator+(HomCoordinates, HomCoordinates);
+// HomCoordinates operator-(HomCoordinates, HomCoordinates);
+// HomCoordinates operator*(float, HomCoordinates);
+// HomCoordinates operator*(HomCoordinates, float);
 
 // float& HomCoordinates::operator[](int index);
 

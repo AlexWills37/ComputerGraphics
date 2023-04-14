@@ -64,7 +64,7 @@ TransformMatrix Camera::GetWorldToCameraMatrix()
             else if (col == 3)
                 value = -this->camera_transform.translation[row];
             
-            inverse_translation.data[row][col] = value;
+            inverse_translation(row, col) = value;
         }
     }
 
@@ -107,7 +107,7 @@ void Camera::GenerateClippingPlanes()
 
     this->clipping_planes[0] = Plane(0, 0, 1, -this->viewport_distance);    // Front plane
     this->clipping_planes[1] = Plane(0, -this->viewport_distance, delta_height, 0);   // Top
-    this->clipping_planes[3] = Plane(0, this->viewport_distance, delta_height, 0);   // Bottom
-    this->clipping_planes[2] = Plane(this->viewport_distance, 0, delta_width, 0);  // Left
+    this->clipping_planes[2] = Plane(0, this->viewport_distance, delta_height, 0);   // Bottom
+    this->clipping_planes[3] = Plane(this->viewport_distance, 0, delta_width, 0);  // Left
     this->clipping_planes[4] = Plane(-this->viewport_distance, 0, delta_width, 0);  // Right
 }

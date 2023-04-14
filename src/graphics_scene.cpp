@@ -117,16 +117,16 @@ void Scene::ClipInstanceAgainstPlane(RenderableModelInstance & instance, Plane* 
 	if (distance > sphere_radius)
 	{
 		// This object is in the bounds entirely!! The instance will keep its normal triangles <3
-		// std::cout << "\t\tInstance is completely in bounds of this plane!" << std::endl;
+		std::cout << "\t\tInstance is completely in bounds of this plane!" << std::endl;
 		instance.triangles = instance.model->triangles;
 	} else if (distance < -sphere_radius)
 	{
-		// std::cout << "\t\tInstance is completely out of bounds of this plane." << std::endl;
+		std::cout << "\t\tInstance is completely out of bounds of this plane." << std::endl;
 		// This object is entirely out of bounds...
 		instance.Reject();
 	} else {
 		// This object is partially in bounds. WE MUST CLIP THE TRIANGLES NOW!!!
-		// std::cout << "\t\tInstance is partially in bounds with this plane..." << std::endl;
+		std::cout << "\t\tInstance is partially in bounds with this plane..." << std::endl;
 		instance.ClipTrianglesAgainstPlane(plane);
 	}
 

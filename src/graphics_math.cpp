@@ -85,7 +85,7 @@ float clamp(float value, float low, float high)
  * 
  * @return the result of matrix multiplication
  */
-TransformMatrix operator*(TransformMatrix m1, TransformMatrix m2)
+TransformMatrix TransformMatrix::operator*(const TransformMatrix& m2)
 {
 	TransformMatrix output;
 	float sum = 0;	// Sum for dot product
@@ -99,9 +99,9 @@ TransformMatrix operator*(TransformMatrix m1, TransformMatrix m2)
 			// We know there will be 4 elements
 			for (int i = 0; i < 4; ++i)
 			{
-				sum += m1.data[row][i] * m2.data[i][col];
+				sum += this->data[row][i] * m2(i, col);
 			}
-			output.data[row][col] = sum;
+			output(row, col) = sum;
 		}
 	}
 
@@ -114,7 +114,7 @@ TransformMatrix operator*(TransformMatrix m1, TransformMatrix m2)
  * 
  * Applies a transformation matrix (4x4) on homogenous coordinates (4x1) with matrix multiplication.
  */
-HomCoordinates operator*(TransformMatrix transform, HomCoordinates point)
+HomCoordinates operator*(const TransformMatrix& transform, const HomCoordinates& point)
 {
 	HomCoordinates output;
 	float sum = 0;	// Sum for dot product
@@ -123,9 +123,9 @@ HomCoordinates operator*(TransformMatrix transform, HomCoordinates point)
 		sum = 0;
 		for (int i = 0; i < 4; ++i)
 		{
-			sum += transform.data[row][i] * point.data[i];
+			sum += transform(row, i) * point[i];
 		}
-		output.data[row] = sum;
+		output[row] = sum;
 	}
 	return output;
 }
