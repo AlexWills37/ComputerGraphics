@@ -6,12 +6,12 @@
 HomCoordinates MovementVector(float rotation[3], float localDirection[3])
 {
     HomCoordinates vector;
-    vector.data[0] = localDirection[0];
-    vector.data[1] = localDirection[1];
-    vector.data[2] = localDirection[2];
-    vector.data[3] = 0;
+    vector[0] = localDirection[0];
+    vector[1] = localDirection[1];
+    vector[2] = localDirection[2];
+    vector[3] = 0;
     
-    vector = BuildRotationMatrix(rotation[0], rotation[1], rotation[2]) * vector;
+    vector = TransformMatrix::BuildRotationMatrix(rotation[0], rotation[1], rotation[2]) * vector;
     return vector;
 }
 
@@ -172,152 +172,5 @@ void GraphicsManager::StayOpenCameraControls()
 		}
 
 	}
-	
-	// bool running = true;
-	// SDL_Keysym key;
-    // float localVelocity[3];
-    // bool move = false;
-	// while(running)
-	// {
-    //     move = false;
-	// 	// Go through the event queue
-	// 	while ( SDL_PollEvent(&event_handler) )
-	// 	{
-	// 		// Handle the event
-	// 		switch (event_handler.type)
-	// 		{	
-	// 			// Quit event
-	// 			case SDL_QUIT:
-	// 				running = false;
-	// 				std::cout << "~ User has closed the window." << std::endl;
-	// 				break;
-	// 			case SDL_KEYDOWN:
-	// 				key = event_handler.key.keysym;
-    //                 localVelocity[0] = 0;
-    //                 localVelocity[1] = 0;
-    //                 localVelocity[2] = 0;
-
-
-	// 				//std::cout << "~ User has pressed key: " << key.sym << std::endl;
-	// 				switch (key.sym)
-	// 				{
-	// 					case SDLK_ESCAPE:
-	// 						std::cout << "~ User pressed [esc] - closing window." << std::endl;
-	// 						running = false;
-	// 						break;
-	// 					// Move left
-	// 					case SDLK_a:
-	// 						// this->main_camera.MovePosition(-0.1, 0, 0);
-    //                         localVelocity[0] = -0.1;
-    //                         localVelocity[1] = 0;
-    //                         localVelocity[2] = 0;
-    //                         move = true;
-	// 						break;
-	// 					// Move back
-	// 					case SDLK_s:
-	// 						// this->main_camera.MovePosition(0, 0, -0.1);
-    //                         localVelocity[0] = 0;
-    //                         localVelocity[1] = 0;
-    //                         localVelocity[2] = -0.1;
-    //                         move = true;
-	// 						break;
-	// 					// Move right
-	// 					case SDLK_d:
-	// 						// this->main_camera.MovePosition(0.1, 0, 0);
-    //                         localVelocity[0] = 0.1;
-    //                         localVelocity[1] = 0;
-    //                         localVelocity[2] = 0;
-    //                         move = true;
-	// 						break;
-	// 					// Move forward
-	// 					case SDLK_w:
-	// 						// this->main_camera.MovePosition(0, 0, 0.1);
-    //                         localVelocity[0] = 0;
-    //                         localVelocity[1] = 0;
-    //                         localVelocity[2] = 0.1;
-    //                         move = true;
-	// 						break;
-	// 					// Move down
-	// 					case SDLK_q:
-	// 						// this->main_camera.MovePosition(0, -0.1, 0);
-    //                         localVelocity[0] = 0;
-    //                         localVelocity[1] = -0.1;
-    //                         localVelocity[2] = 0;
-    //                         move = true;
-	// 						break;
-
-	// 					// Move up
-	// 					case SDLK_e:
-	// 						// this->main_camera.MovePosition(0, 0.1, 0);
-    //                         localVelocity[0] = 0;
-    //                         localVelocity[1] = 0.1;
-    //                         localVelocity[2] = 0;
-    //                         move = true;
-	// 						break;
-
-	// 					// Rotate up
-	// 					case SDLK_i:
-	// 						// Fall through
-	// 					case SDLK_UP:
-	// 						this->main_camera.Rotate(3.14/60, 0, 0);
-	// 						break;
-
-	// 					// Rotate down
-	// 					case SDLK_k:
-	// 						// Fall through
-	// 					case SDLK_DOWN:
-	// 						this->main_camera.Rotate(-3.14/60, 0, 0);
-	// 						break;
-	// 					// Rotate counter-clockwise
-	// 					case SDLK_j:
-	// 						// Fall through
-	// 					case SDLK_LEFT:
-	// 						this->main_camera.Rotate(0, 3.14/60, 0);
-	// 						break;
-						
-	// 					// Rotate clockwise
-	// 					case SDLK_l:
-	// 						// Fall through
-	// 					case SDLK_RIGHT:
-	// 						this->main_camera.Rotate(0, -3.14/60, 0);
-	// 						break;
-
-	// 					case SDLK_SPACE:
-	// 						this->rotate_cube->transform.scale[0] += 0.5;
-	// 						this->rotate_cube->transform.scale[1] += 0.5;
-	// 						this->rotate_cube->transform.scale[2] += 0.5;
-	// 						break;
-
-	// 					default:
-	// 						// Do nothing if key not recognized
-	// 						break;
-	// 				}
-
-					
-
-	// 				break;
-	// 			default:
-	// 				break;
-	// 		}
-	// 	}
-
-    //     // Move camera
-    //     if (move)
-    //     {
-    //         HomCoordinates globalVelocity = MovementVector(this->main_camera.GetRotation(), localVelocity);
-    //         this->main_camera.MovePosition(globalVelocity.data[0], globalVelocity.data[1], globalVelocity.data[2]);
-    //         // this->main_camera.MovePosition(localVelocity[0], localVelocity[1], localVelocity[2]);
-    //     }
-
-	// 	this->RotateCube(this->rotate_cube);
-
-	// 	// Clear screen
-	// 	this->ChangeBrushColor(BLACK);
-	// 	this->ClearScreen();
-	// 	// Render new scene
-	// 	this->current_scene.RenderScene();
-	// 	this->RefreshScreen();
-
-	//}
 }
 

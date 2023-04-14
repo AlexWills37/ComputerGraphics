@@ -26,51 +26,70 @@
  */
 class Transform {
     public:
-	float scale[3];
-	float rotation[3];
-	float translation[3];
+        float scale[3];
+        float rotation[3];
+        float translation[3];
 
     // Constructors
-    /*
-     * Creates a Transform with specified values.
-     * @param sx, sy, sz - the scale values for x, y, and z
-     * @param rx, ry, rz - the rotation values for x, y, and z
-     * @param tx, ty, tz - the translation (position) values for x, y, and z
-     */
-    Transform(float sx, float sy, float sz, float rx, float ry, float rz, float tx, float ty, float tz)
-    {
-        scale[0] = sx;
-        scale[1] = sy;
-        scale[2] = sz;
-        rotation[0] = rx;
-        rotation[1] = ry;
-        rotation[2] = rz;
-        translation[0] = tx;
-        translation[1] = ty;
-        translation[2] = tz;
-    }
+    public:
+        /*
+        * Default Constructor. Creates a Transform at (0, 0, 0) with a scale of 1 and no rotation (facing positive Z).
+        */
+        Transform() : Transform(1, 1, 1, 0, 0, 0, 0, 0, 0)
+        {}
 
-    /*
-     * Move in local space, where movement in the positive Z direction is movement
-     * in the direction of this transform's rotation.
-     */
-    void MoveLocally(float deltaX, float deltaY, float deltaZ);
+        /*
+        * Creates a Transform with specified values.
+        * @param sx, sy, sz - the scale values for x, y, and z
+        * @param rx, ry, rz - the rotation values for x, y, and z
+        * @param tx, ty, tz - the translation (position) values for x, y, and z
+        */
+        Transform(float sx, float sy, float sz, float rx, float ry, float rz, float tx, float ty, float tz)
+        {
+            scale[0] = sx;
+            scale[1] = sy;
+            scale[2] = sz;
+            rotation[0] = rx;
+            rotation[1] = ry;
+            rotation[2] = rz;
+            translation[0] = tx;
+            translation[1] = ty;
+            translation[2] = tz;
+        }
 
-    void RotateAboutAxis(HomCoordinates axis_vector, float rotation);
+        /*
+         * Copy constructor. Explicitly copies array data.
+         */
+        Transform(const Transform& to_copy)
+        {
+            scale[0] = to_copy.scale[0];
+            scale[1] = to_copy.scale[1];
+            scale[2] = to_copy.scale[2];
+            rotation[0] = to_copy.rotation[0];
+            rotation[1] = to_copy.rotation[1];
+            rotation[2] = to_copy.rotation[2];
+            translation[0] = to_copy.translation[0];
+            translation[1] = to_copy.translation[1];
+            translation[2] = to_copy.translation[2];
+        }
 
-    /*
-     * Creates a Transform at (0, 0, 0) with a scale of 1 and no rotation (facing positive Z).
-     */
-    Transform() : Transform(1, 1, 1, 0, 0, 0, 0, 0, 0)
-    {}
-
-    /*
-     * Casts a Transform object to its equivalent 4x4 TransformMatrix.
-     */
-    operator TransformMatrix() const;
+    // Operators
+    public:
+        /*
+        * Casts a Transform object to its equivalent 4x4 TransformMatrix.
+        */
+        operator TransformMatrix() const;
 
 
+    // Methods
+    public: 
+        /*
+        * Move in local space, where movement in the positive Z direction is movement
+        * in the direction of this transform's rotation.
+        */
+        void MoveLocally(float deltaX, float deltaY, float deltaZ);
 
+        void RotateAboutAxis(HomCoordinates axis_vector, float rotation);
 };
 
 
@@ -97,7 +116,13 @@ struct Model {
  * along with a transform specifying the location of the model in World Space.
  */
 class ModelInstance {
-    
+    // Member variables
+    protected:
+
+        struct Model * model;
+        Transform transform;
+
+    // Constructors
     public:
         ModelInstance()
         {}
@@ -113,16 +138,13 @@ class ModelInstance {
 
         // ~ModelInstance();
 
+    // Methods
     public:
         Model * GetModel()
         {
             return this->model;
         }
 
-    protected:
-
-        struct Model * model;
-        Transform transform;
 
 };
 

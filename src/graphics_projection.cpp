@@ -49,6 +49,6 @@ Point2D Camera::ProjectVertex(Point3D vertex)
  */
 Point2D Camera::ProjectVertex(HomCoordinates vertex)
 {
-    Point3D p_vertex = {vertex.data[0], vertex.data[1], vertex.data[2]};
+    Point3D p_vertex = {vertex[0], vertex[1], vertex[2]};
     return this->ProjectVertex(p_vertex);
 }

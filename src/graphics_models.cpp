@@ -2,8 +2,6 @@
 #include "../lib/graphics.h"
 
 
-
-
 /*
  * Based on this instance's model and transform, set the list of worldspace points
  */
@@ -20,10 +18,10 @@ void RenderableModelInstance::GenerateWorldspacePoints()
     for (int i = 0; i < num_points; ++i)
     {
         // Get the model-space point as homogenous coordinates
-		newPoint.data[0] = model->vertices[i].x;
-		newPoint.data[1] = model->vertices[i].y;
-		newPoint.data[2] = model->vertices[i].z;
-		newPoint.data[3] = 1;
+		newPoint[0] = model->vertices[i].x;
+		newPoint[1] = model->vertices[i].y;
+		newPoint[2] = model->vertices[i].z;
+		newPoint[3] = 1;
 		
 		// Apply matrix to convert to world space
 		newPoint = world_space_transform * newPoint;
@@ -52,13 +50,13 @@ void RenderableModelInstance::GenerateBoundingSphere()
     {
         for (HomCoordinates point : this->points)
         {
-            center.data[0] += point.data[0];
-            center.data[1] += point.data[1];
-            center.data[2] += point.data[2];
+            center[0] += point[0];
+            center[1] += point[1];
+            center[2] += point[2];
         }
-        center.data[0] /= this->points.size();
-        center.data[1] /= this->points.size();
-        center.data[2] /= this->points.size();
+        center[0] /= this->points.size();
+        center[1] /= this->points.size();
+        center[2] /= this->points.size();
     }
 
     // Now find the largest distance between the center and a point (the radius)
@@ -67,9 +65,9 @@ void RenderableModelInstance::GenerateBoundingSphere()
     for (HomCoordinates point : this->points)
     {
         distance = std::sqrt(
-            std::pow(point.data[0] - center.data[0], 2) +
-            std::pow(point.data[1] - center.data[1], 2) +
-            std::pow(point.data[2] - center.data[2], 2)
+            std::pow(point[0] - center[0], 2) +
+            std::pow(point[1] - center[1], 2) +
+            std::pow(point[2] - center[2], 2)
         );
 
         if (distance > radius)
