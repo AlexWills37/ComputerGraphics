@@ -51,7 +51,7 @@ void Transform::MoveLocally(float deltaX, float deltaY, float deltaZ)
 	movement[2] = deltaZ;
 	movement[3] = 0;
 
-	// Get rotation matrix from this transform's rotations
+	// Get and apply rotation matrix from this transform's rotations
 	TransformMatrix rotation = TransformMatrix::BuildRotationMatrix(this->rotation[0], this->rotation[1], this->rotation[2]);
 	movement = rotation * movement;
 
@@ -61,7 +61,7 @@ void Transform::MoveLocally(float deltaX, float deltaY, float deltaZ)
 	this->translation[2] += movement[2];
 }
 
-void Transform::RotateAboutAxis(HomCoordinates axis_vector, float rotation)
-{
-	// Start by normalizing the axis
-}
+// void Transform::RotateAboutAxis(HomCoordinates axis_vector, float rotation)
+// {
+// 	// Start by normalizing the axis
+// }

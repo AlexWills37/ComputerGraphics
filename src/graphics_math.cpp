@@ -168,6 +168,15 @@ HomCoordinates operator*(float f, const HomCoordinates& p1)
 }
 
 
+HomCoordinates HomCoordinates::operator/(float f) const
+{
+	HomCoordinates output;
+	output[0] = this->data[0] / f;
+	output[1] = this->data[1] / f;
+	output[2] = this->data[2] / f;
+	return output;
+}
+
 TransformMatrix TransformMatrix::BuildRotationMatrix(float x, float y, float z)
 {
 	// First initialize all matrices and	

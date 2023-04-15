@@ -10,6 +10,7 @@
 
 #include <array>
 #include <iostream>
+#include "graphics_utility.h"   // For defining Point3D struct for HomCoordinates casting
 
 /*
  * Interpolate a line between two variables.
@@ -159,6 +160,29 @@ class HomCoordinates {
         }
 
         /*
+         * Constructs Homogenouse Coordinates / Vector with x, y, z, and w.
+         * w = 0 signifies a vector, and w != 0 (typically w = 1) signifies coordinates.
+         */
+        HomCoordinates(float x, float y, float z, float w)
+        {
+            this->data[0] = x;
+            this->data[1] = y;
+            this->data[2] = z;
+            this->data[3] = w;
+        }
+
+        /*
+         * Constructs HomCoordinates by casting a Point3D object.
+         */
+        HomCoordinates(const Point3D& point)
+        {
+            this->data[0] = point.x;
+            this->data[1] = point.y;
+            this->data[2] = point.z;
+            this->data[3] = 1;
+        }
+
+        /*
          * Copy constructor. Expliclty copies array data.
          */
         HomCoordinates(const HomCoordinates& to_copy)
@@ -205,6 +229,9 @@ class HomCoordinates {
 
         // Scalar multiplication
         HomCoordinates operator*(float) const;
+
+        // Scalar division
+        HomCoordinates operator/(float) const;
 
 };
 // Operators in the other direction
