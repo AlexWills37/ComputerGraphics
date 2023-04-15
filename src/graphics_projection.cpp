@@ -35,9 +35,6 @@ Point2D Camera::ProjectVertex(Point3D vertex)
     float viewport_x = vertex.x * this->viewport_distance / vertex.z;
     float viewport_y = vertex.y * this->viewport_distance / vertex.z;
 
-    // std::cout << "Viewport: " << viewport_width << " x " << viewport_height << ": " << viewport_distance << std::endl;
-    // std::cout << "Canvas: " << canvas_width << " x " << canvas_height << std::endl;
-    
     return ViewportToCanvas(viewport_x, viewport_y, this->viewport_width, this->viewport_height,
                             this->canvas_width, this->canvas_height);
 }

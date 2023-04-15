@@ -98,7 +98,6 @@ void RenderableModelInstance::ClipTrianglesAgainstPlane(Plane* plane)
         {
             this->triangles.erase(iterator);
             iterator--;
-            std::cout << "Triangle clipped!" << std::endl;
         }
     }
 
@@ -111,18 +110,12 @@ void RenderableModelInstance::ClipTrianglesAgainstPlane(Plane* plane)
         
     }
 
-    int num_tris = new_tris.size();
-    if (num_tris > 0)
-    {
-        std::cout << "\tadding " << num_tris << " triangles to the model" << std::endl;
-    }
     Triangle last;
     for (Triangle triangle : new_tris)
     {
         this->triangles.push_back(triangle);
         last = this->triangles[ (this->triangles.size() - 1) ];
     }
-    std::cout << "Clipping complete for this plane" << std::endl;
 }
 
 /*

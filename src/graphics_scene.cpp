@@ -86,9 +86,6 @@ void Scene::ClipInstance(RenderableModelInstance & instance, std::array<Plane*, 
 	for (int i = 0; i < planes.size() && !instance.GetIsRejected(); ++i)
 	{
 		Scene::ClipInstanceAgainstPlane(instance, planes[i]);
-		if (instance.GetIsRejected()){
-			std::cout << "\tBounding sphere rejected by plane: " << i << std::endl;
-		}
 	}
 
 }
@@ -102,16 +99,12 @@ void Scene::ClipInstanceAgainstPlane(RenderableModelInstance & instance, Plane* 
 	float sphere_radius = instance.GetBoundingSphereRadius();
 	if (distance > sphere_radius)	// Distance > radius, so every point is definitely on the correct side of the plane
 	{
-		std::cout << "\t\tInstance is completely in bounds of this plane!" << std::endl;
 		// This object is in the bounds entirely!! The instance will keep its current triangles.
-		// instance.triangles = instance.model->triangles;
 	} else if (distance < -sphere_radius)	// Distance < -radius, so every point is definitely on the wrong side of the plane
 	{
-		std::cout << "\t\tInstance is completely out of bounds of this plane." << std::endl;
 		// This object is entirely out of bounds...
 		instance.Reject();
 	} else {	// Distance is in between the radius, so the sphere intersects the plane, and some points may be on different sides
-		std::cout << "\t\tInstance is partially in bounds with this plane..." << std::endl;
 		// This object is partially in bounds. WE MUST CLIP THE TRIANGLES NOW!!!
 		instance.ClipTrianglesAgainstPlane(plane);
 	}
