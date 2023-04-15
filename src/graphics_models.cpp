@@ -2,8 +2,6 @@
 #include "../lib/graphics.h"
 
 
-
-
 /*
  * Based on this instance's model and transform, set the list of worldspace points
  */
@@ -20,17 +18,15 @@ void RenderableModelInstance::GenerateWorldspacePoints()
     for (int i = 0; i < num_points; ++i)
     {
         // Get the model-space point as homogenous coordinates
-		newPoint.data[0] = model->vertices[i].x;
-		newPoint.data[1] = model->vertices[i].y;
-		newPoint.data[2] = model->vertices[i].z;
-		newPoint.data[3] = 1;
+        newPoint = HomCoordinates(model->vertices[i]);
 		
 		// Apply matrix to convert to world space
 		newPoint = world_space_transform * newPoint;
 
-        this->points[i] = newPoint;  // Passed by value
+        this->points[i] = newPoint;  // Pass the point into the instance array by value
     }
 
+    this->in_camera_space = false;  // Points are now in world space, not in camera space. Also, any clipping has been undone.
 }
 
 void RenderableModelInstance::ApplyTransform(TransformMatrix transform)
@@ -39,6 +35,8 @@ void RenderableModelInstance::ApplyTransform(TransformMatrix transform)
     {
         this->points[i] = transform * this->points[i];
     }
+
+    this->in_camera_space = true;
 }
 
 /*
@@ -52,14 +50,11 @@ void RenderableModelInstance::GenerateBoundingSphere()
     {
         for (HomCoordinates point : this->points)
         {
-            center.data[0] += point.data[0];
-            center.data[1] += point.data[1];
-            center.data[2] += point.data[2];
+            center = center + point;
         }
-        center.data[0] /= this->points.size();
-        center.data[1] /= this->points.size();
-        center.data[2] /= this->points.size();
+        center = center / this->points.size();
     }
+    center[3] = 1;
 
     // Now find the largest distance between the center and a point (the radius)
     float radius = 0;
@@ -67,9 +62,9 @@ void RenderableModelInstance::GenerateBoundingSphere()
     for (HomCoordinates point : this->points)
     {
         distance = std::sqrt(
-            std::pow(point.data[0] - center.data[0], 2) +
-            std::pow(point.data[1] - center.data[1], 2) +
-            std::pow(point.data[2] - center.data[2], 2)
+            std::pow(point[0] - center[0], 2) +
+            std::pow(point[1] - center[1], 2) +
+            std::pow(point[2] - center[2], 2)
         );
 
         if (distance > radius)
@@ -78,7 +73,6 @@ void RenderableModelInstance::GenerateBoundingSphere()
 
     this->bounding_sphere_center = center;
     this->bounding_sphere_radius = radius;
-
 }
 
 
@@ -98,12 +92,12 @@ void RenderableModelInstance::ClipTrianglesAgainstPlane(Plane* plane)
     {
         Triangle to_clip = *iterator;
 
+        // Clip against plane, possibly adding new triangles to our buffer list
         clipped = this->ClipTriangle(to_clip, plane);
         if (clipped)
         {
             this->triangles.erase(iterator);
             iterator--;
-            std::cout << "Triangle clipped!" << std::endl;
         }
     }
 
@@ -111,21 +105,17 @@ void RenderableModelInstance::ClipTrianglesAgainstPlane(Plane* plane)
     
     for (HomCoordinates point : new_points)
     {
-        std::cout << "\t" << point.data[0] << ", " << point.data[1] << ", " << point.data[2] << std::endl;
+        // std::cout << "\t" << point.data[0] << ", " << point.data[1] << ", " << point.data[2] << std::endl;
         this->points.push_back(point);
         
     }
 
-    int num_tris = new_tris.size();
-    if (num_tris > 0)
-    {
-        std::cout << "\tadding " << num_tris << " triangles to the model" << std::endl;
-    }
+    Triangle last;
     for (Triangle triangle : new_tris)
     {
         this->triangles.push_back(triangle);
+        last = this->triangles[ (this->triangles.size() - 1) ];
     }
-
 }
 
 /*
@@ -134,22 +124,21 @@ void RenderableModelInstance::ClipTrianglesAgainstPlane(Plane* plane)
  */
 bool RenderableModelInstance::ClipTriangle(Triangle to_clip, Plane * plane)
 {
-
-    
     bool clipped = true;
+
+    // Get triangle and points we are clipping
 	HomCoordinates p0, p1, p2;
 	p0 = this->points[to_clip.p0];
 	p1 = this->points[to_clip.p1];
 	p2 = this->points[to_clip.p2];
 
-
-
+    // Get distances from points to planes
 	float dist[3];
 	dist[0] = plane->SignedDistance(p0);
 	dist[1] = plane->SignedDistance(p1);
 	dist[2] = plane->SignedDistance(p2);
 
-	// Sort the distances
+	// Sort the points by distance
 	float temp;
     HomCoordinates temp_coord;
     int temp_idx;
@@ -209,7 +198,7 @@ bool RenderableModelInstance::ClipTriangle(Triangle to_clip, Plane * plane)
         compute C' = Intersection(AC, plane)
         return [Triangle(A, B', C')]*/
 
-        HomCoordinates * pA = &p2;
+        // HomCoordinates * pA = &p2;
         HomCoordinates pB_prime = plane->Intersection(p2, p1);
         HomCoordinates pC_prime = plane->Intersection(p2, p0);
         this->new_points.push_back(pB_prime);
@@ -240,8 +229,6 @@ bool RenderableModelInstance::ClipTriangle(Triangle to_clip, Plane * plane)
        this->new_tris.push_back(new_tri0);
        this->new_tris.push_back(new_tri1);
        this->new_point_start_index += 2;
-
-
 	}
     
     return clipped;

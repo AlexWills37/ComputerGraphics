@@ -47,7 +47,8 @@ void Camera::Rotate(float deltaX, float deltaY, float deltaZ)
  */
 TransformMatrix Camera::GetWorldToCameraMatrix()
 {
-    TransformMatrix inverse_rotation = BuildRotationMatrix(-this->camera_transform.rotation[0], -this->camera_transform.rotation[1], -this->camera_transform.rotation[2]);
+    TransformMatrix inverse_rotation = TransformMatrix::BuildRotationMatrix(-this->camera_transform.rotation[0], 
+        -this->camera_transform.rotation[1], -this->camera_transform.rotation[2]);
     
     // TransformMatrix inverse_rotation = BuildRotationMatrix(-this->pitch, 0, 0) * BuildRotationMatrix(0, -this->yaw, 0);
 
@@ -64,7 +65,7 @@ TransformMatrix Camera::GetWorldToCameraMatrix()
             else if (col == 3)
                 value = -this->camera_transform.translation[row];
             
-            inverse_translation.data[row][col] = value;
+            inverse_translation(row, col) = value;
         }
     }
 
@@ -83,19 +84,23 @@ void Camera::RotateVertically(float rotation)
     // Assume that the X axis is parallel to the XZ plane (in the roll/pitch/yaw model, the roll is 0)
     // Rotate the X axis so that it is in line with the global X axis
     // (reverse the Y rotation to 0)
-    TransformMatrix invertY = BuildRotationMatrix(0, -this->camera_transform.rotation[1], 0);
-    TransformMatrix revertY = BuildRotationMatrix(0, this->camera_transform.rotation[1], 0);
+    TransformMatrix invertY = TransformMatrix::BuildRotationMatrix(0, -this->camera_transform.rotation[1], 0);
+    TransformMatrix revertY = TransformMatrix::BuildRotationMatrix(0, this->camera_transform.rotation[1], 0);
 
 
 
     // Use a mini-rotation matrix to rotate exclusively on the X axis
     // (apply the x rotation)
-    TransformMatrix applyX = BuildRotationMatrix(rotation, 0, 0);
+    TransformMatrix applyX = TransformMatrix::BuildRotationMatrix(rotation, 0, 0);
 
 
     // Undo the rotation that lined the global X axis up
 }
 
+/*
+ * Generates the 5 clipping planes of this camera based on the viewport (distance, width, height).
+ * The viewport will always be centered in the camera's vision.
+ */
 void Camera::GenerateClippingPlanes()
 {
     // Create clipping planes
@@ -107,7 +112,7 @@ void Camera::GenerateClippingPlanes()
 
     this->clipping_planes[0] = Plane(0, 0, 1, -this->viewport_distance);    // Front plane
     this->clipping_planes[1] = Plane(0, -this->viewport_distance, delta_height, 0);   // Top
-    this->clipping_planes[3] = Plane(0, this->viewport_distance, delta_height, 0);   // Bottom
-    this->clipping_planes[2] = Plane(this->viewport_distance, 0, delta_width, 0);  // Left
+    this->clipping_planes[2] = Plane(0, this->viewport_distance, delta_height, 0);   // Bottom
+    this->clipping_planes[3] = Plane(this->viewport_distance, 0, delta_width, 0);  // Left
     this->clipping_planes[4] = Plane(-this->viewport_distance, 0, delta_width, 0);  // Right
 }

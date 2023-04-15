@@ -77,15 +77,14 @@ float clamp(float value, float low, float high)
 }
 
 /*
- * Multiply two 4x4 transformation matrices
+ * [Matrix Multiplication] Multiply two 4x4 transformation matrices
  * NOT a commutative operation.
  * 
- * @param m1 - the first matrix to multiply
  * @param m2 - the second matrix to multiply
  * 
  * @return the result of matrix multiplication
  */
-TransformMatrix operator*(TransformMatrix m1, TransformMatrix m2)
+TransformMatrix TransformMatrix::operator*(const TransformMatrix& m2) const
 {
 	TransformMatrix output;
 	float sum = 0;	// Sum for dot product
@@ -99,9 +98,9 @@ TransformMatrix operator*(TransformMatrix m1, TransformMatrix m2)
 			// We know there will be 4 elements
 			for (int i = 0; i < 4; ++i)
 			{
-				sum += m1.data[row][i] * m2.data[i][col];
+				sum += this->data[row][i] * m2(i, col);
 			}
-			output.data[row][col] = sum;
+			output(row, col) = sum;
 		}
 	}
 
@@ -114,7 +113,7 @@ TransformMatrix operator*(TransformMatrix m1, TransformMatrix m2)
  * 
  * Applies a transformation matrix (4x4) on homogenous coordinates (4x1) with matrix multiplication.
  */
-HomCoordinates operator*(TransformMatrix transform, HomCoordinates point)
+HomCoordinates operator*(const TransformMatrix& transform, const HomCoordinates& point)
 {
 	HomCoordinates output;
 	float sum = 0;	// Sum for dot product
@@ -123,92 +122,97 @@ HomCoordinates operator*(TransformMatrix transform, HomCoordinates point)
 		sum = 0;
 		for (int i = 0; i < 4; ++i)
 		{
-			sum += transform.data[row][i] * point.data[i];
+			sum += transform(row, i) * point[i];
 		}
-		output.data[row] = sum;
+		output[row] = sum;
 	}
 	return output;
 }
 
-HomCoordinates operator+(HomCoordinates p0, HomCoordinates p1)
+HomCoordinates HomCoordinates::operator+(const HomCoordinates& p1) const
 {
 	HomCoordinates output;
-	output.data[0] = p0.data[0] + p1.data[0];
-	output.data[1] = p0.data[1] + p1.data[1];
-	output.data[2] = p0.data[2] + p1.data[2];
+	output[0] = this->data[0] + p1[0];
+	output[1] = this->data[1] + p1[1];
+	output[2] = this->data[2] + p1[2];
 
 	return output;
 }
 
-HomCoordinates operator-(HomCoordinates p0, HomCoordinates p1)
+HomCoordinates HomCoordinates::operator-(const HomCoordinates& p1) const
 {
 	HomCoordinates output;
-	output.data[0] = p0.data[0] - p1.data[0];
-	output.data[1] = p0.data[1] - p1.data[1];
-	output.data[2] = p0.data[2] - p1.data[2];
+	output[0] = this->data[0] - p1[0];
+	output[1] = this->data[1] - p1[1];
+	output[2] = this->data[2] - p1[2];
 
 	return output;
 }
 
-HomCoordinates operator*(float f, HomCoordinates p1)
+HomCoordinates HomCoordinates::operator*(float f) const
 {
 	HomCoordinates output;
-	output.data[0] = f * p1.data[0];
-	output.data[1] = f * p1.data[1];
-	output.data[2] = f * p1.data[2];
-
+	output[0] = this->data[0] * f;
+	output[1] = this->data[1] * f;
+	output[2] = this->data[2] * f;
 	return output;
 }
 
-HomCoordinates operator*(HomCoordinates p0, float f)
+
+/*
+ * Scalar multiplication of a HomCoordinates vector.
+ */
+HomCoordinates operator*(float f, const HomCoordinates& p1)
 {
-	return f * p0;
+	return p1 * f;
 }
 
-TransformMatrix BuildRotationMatrix(float x, float y, float z)
+
+HomCoordinates HomCoordinates::operator/(float f) const
 {
-	// First initialize all matrices
-	TransformMatrix xRot, yRot, zRot;
-	
-	// FIRST: Set all array values to 0
-	for (int row = 0; row < 4; ++row)
-	{
-		for (int col = 0; col < 4; ++col)
-		{
-			xRot.data[row][col] = 0;
-			yRot.data[row][col] = 0;
-			zRot.data[row][col] = 0;
-		}
-	}
+	HomCoordinates output;
+	output[0] = this->data[0] / f;
+	output[1] = this->data[1] / f;
+	output[2] = this->data[2] / f;
+	return output;
+}
+
+TransformMatrix TransformMatrix::BuildRotationMatrix(float x, float y, float z)
+{
+	// First initialize all matrices and	
+	// set all array values to 0 (default constructor)
+	TransformMatrix xRot = TransformMatrix();
+	TransformMatrix yRot = TransformMatrix();
+	TransformMatrix zRot = TransformMatrix();
 
 	// X rotation:
-	xRot.data[0][0] = 1;
-	xRot.data[1][1] = std::cos(x);
-	xRot.data[1][2] = std::sin(x);
-	xRot.data[2][1] = - std::sin(x);
-	xRot.data[2][2] = std::cos(x);
-	xRot.data[3][3] = 1;
+	xRot(0, 0) = 1;
+	xRot(1, 1) = std::cos(x);
+	xRot(1, 2) = std::sin(x);
+	xRot(2, 1) = - std::sin(x);
+	xRot(2, 2) = std::cos(x);
+	xRot(3, 3) = 1;
 
 	// Y rotation:
-	yRot.data[1][1] = 1;
-	yRot.data[0][0] = std::cos(y);
-	yRot.data[0][2] = - std::sin(y);
-	yRot.data[2][0] = std::sin(y);
-	yRot.data[2][2] = std::cos(y);
-	yRot.data[3][3] = 1;
+	yRot(1, 1) = 1;
+	yRot(0, 0) = std::cos(y);
+	yRot(0, 2) = - std::sin(y);
+	yRot(2, 0) = std::sin(y);
+	yRot(2, 2) = std::cos(y);
+	yRot(3, 3) = 1;
 
 	// Z rotation:
-	zRot.data[2][2] = 1;
-	zRot.data[0][0] = std::cos(z);
-	zRot.data[1][0] = - std::sin(z);
-	zRot.data[0][1] = std::sin(z);
-	zRot.data[1][1] = std::cos(z);
-	zRot.data[3][3] = 1;
+	zRot(2, 2) = 1;
+	zRot(0, 0) = std::cos(z);
+	zRot(1, 0) = - std::sin(z);
+	zRot(0, 1) = std::sin(z);
+	zRot(1, 1) = std::cos(z);
+	zRot(3, 3) = 1;
 
 	// Combine all rotation
-	TransformMatrix rotation = (zRot * yRot) * xRot;
+	TransformMatrix rotation = zRot * yRot * xRot;
 	// Put a 1 in the bottom right corner
-	rotation.data[3][3] = 1;
+	rotation(3, 3) = 1;
 
 	return rotation;
 }
@@ -233,28 +237,23 @@ Plane::Plane(float x, float y, float z, float d)
 	this->constant = d;
 }
 
-Plane::Plane(const Plane & to_copy)
-{
-	this->normal = to_copy.normal;
-	this->constant = to_copy.constant;
-}
 
-float Plane::SignedDistance(HomCoordinates point)
+float Plane::SignedDistance(const HomCoordinates& point)
 {
 	return (
-		point.data[0] * normal[0] +
-		point.data[1] * normal[1] +
-		point.data[2] * normal[2] +
+		point[0] * normal[0] +
+		point[1] * normal[1] +
+		point[2] * normal[2] +
 		constant
 	);
 }
 
-HomCoordinates Plane::Intersection(HomCoordinates pA, HomCoordinates pB)
+HomCoordinates Plane::Intersection(const HomCoordinates& pA, const HomCoordinates& pB)
 {
 	HomCoordinates diff = pA - pB;
 	float t = (
-		(-this->constant - (normal[0] * pA.data[0] + normal[1] * pA.data[1] + normal[2] * pA.data[2])) /
-		(normal[0] * diff.data[0] + normal[1] * diff.data[1] + normal[2] * diff.data[2])
+		(-this->constant - (normal[0] * pA[0] + normal[1] * pA[1] + normal[2] * pA[2])) /
+		(normal[0] * diff[0] + normal[1] * diff[1] + normal[2] * diff[2])
 	);
 
 	return pA + (t * diff);
