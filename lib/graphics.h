@@ -45,10 +45,13 @@ static constexpr Color REEEEEEEEEEEE = {100, 200, 300};
 class GraphicsManager
 {
 public:
+	int drawCount;
 	GraphicsManager()
 	{
 		std::cout << "~ Creating Graphics Manager" << std::endl;
+		drawCount = 0;
 	}
+
 
 private:
 	// Objects from SDL for handling graphics

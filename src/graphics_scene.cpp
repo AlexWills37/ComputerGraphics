@@ -10,17 +10,17 @@
 #include <unistd.h>	// For calling sleep() during debugging
 #include <iostream>	// For print statements for debugging
 
-/*
- * Destructor. Attempts to delete the ModelInstances at every pointer.
- */
-Scene::~Scene()
-{
-	for (ModelInstance * pointer : this->model_instances)
-	{
-		if (pointer != nullptr)
-			delete pointer;
-	}
-}
+// /*
+//  * Destructor. Attempts to delete the ModelInstances at every pointer.
+//  */
+// Scene::~Scene()
+// {
+// 	// for (ModelInstance * pointer : this->model_instances)
+// 	// {
+// 	// 	if (pointer != nullptr)
+// 	// 		delete pointer;
+// 	// }
+// }
 
 /*
  * Copy constructor. Explicitly copies every model instance as a pointer to a COPY

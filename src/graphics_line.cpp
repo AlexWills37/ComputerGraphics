@@ -47,8 +47,8 @@ void GraphicsManager::DrawLine(Point2D p0, Point2D p1)
 
 		} else 
 		{
-			// std::cout << "What! Horizontal Line with " << num_values << " points" << std::endl;
-			// std::cout << "\tp1 y: " << p1.y << " - p0.y: " << p0.y << std::endl;
+			std::cout << "What! Horizontal Line with " << num_values << " points" << std::endl;
+			std::cout << "\tp1 y: " << p1.y << " - p0.y: " << p0.y << std::endl;
 
 		}
 
@@ -81,8 +81,8 @@ void GraphicsManager::DrawLine(Point2D p0, Point2D p1)
 		}
 		else 
 		{
-			// std::cout << "What! Vertical Line with " << num_values << " points" << std::endl;
-			// std::cout << "\tp1 y: " << p1.y << " - p0.y: " << p0.y << std::endl;
+			std::cout << "What! Vertical Line with " << num_values << " points" << std::endl;
+			std::cout << "\tp1 y: " << p1.y << " - p0.y: " << p0.y << std::endl;
 		}
 	}
 }

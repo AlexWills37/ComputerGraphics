@@ -169,6 +169,9 @@ void GraphicsManager::StayOpenCameraControls()
 			this->ClearScreen();
 			this->current_scene.RenderScene();
 			this->RefreshScreen();
+			std::cout << "Pixel draw calls this frame: " << this->drawCount << std::endl;
+			this->drawCount = 0;
+
 		}
 
 	}

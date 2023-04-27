@@ -118,12 +118,13 @@ void GraphicsManager::PutPixel(int x, int y)
     if ( x < -(this->max_screen_x) || x > this->max_screen_x
 		|| y < -(this->max_screen_y) || y > this->max_screen_y)
     {
-        // std::cout << "!!WARNING: Attempting to place a pixel outside of the screen: (" << x
-        //     << ", " << y << ")" << std::endl; 
+        std::cout << "!!WARNING: Attempting to place a pixel outside of the screen: (" << x
+            << ", " << y << ")" << std::endl; 
     }
 	else 
 	{
 	    SDL_RenderDrawPoint(renderer, this->max_screen_x + x, this->max_screen_y - y);
+		this->drawCount++;
 	}
 	// Pixel (0, 0) (top left) == World space (-(width / 2), (width / 2)) 
 	// Pixel (width - 1, height - 1) == World space ( (width / 2) - 1, 1 -(width / 2))

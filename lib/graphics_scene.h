@@ -163,6 +163,11 @@ class ModelInstance {
             return this->model;
         }
 
+        Transform * GetTransform()
+        {
+            return &(this->transform);
+        }
+
 
 };
 
@@ -550,7 +555,7 @@ class Scene
         Scene(const Scene& to_copy);
 
         // Destructor
-        ~Scene();
+        // ~Scene();
 
     // Public methods
     public:
