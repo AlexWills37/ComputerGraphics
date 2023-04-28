@@ -77,7 +77,7 @@ void test()
 int main()
 {
 
-	test();
+	// test();
 
 
 	// MatrixTest();
@@ -157,12 +157,14 @@ int main()
 		transform = working->GetTransform();
 		transform->translation[2] = transform->translation[0];
 		transform->translation[0] = 8;
+		transform->rotation[1] += 3.14 / 2;
 		scene1->AddModelInstance(*working);
 
 		working = new ModelInstance(scene[i]);
 		transform = working->GetTransform();
 		transform->translation[2] = transform->translation[0];
 		transform->translation[0] = -8;
+		transform->rotation[1] += 3.14 / 4;
 		scene1->AddModelInstance(*working);
 	}
 

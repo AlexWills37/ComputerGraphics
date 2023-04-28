@@ -41,6 +41,7 @@ void GraphicsManager::OpenWindow(int width, int height)
 	float aspect_ratio = float(width) / float(height);
 	float viewport_width = viewport_height * aspect_ratio;
 
+	// Create camera with a starting viewport size based on the canvas size
 	this->main_camera = Camera(width, height, viewport_width, viewport_height, viewport_distance);
 
 	
@@ -55,7 +56,9 @@ void GraphicsManager::OpenWindow(int width, int height)
         << ") and ending at (" << (this->max_screen_x - this->canvas_width) << ", "
         << (this->max_screen_y - this->canvas_height) << ")" << std::endl;
 
-	// Create camera with a starting viewport size based on the canvas size
+
+	// Initialize the depth buffer
+	this->depth_buffer = DepthBuffer(width, height);
 
 }
 
