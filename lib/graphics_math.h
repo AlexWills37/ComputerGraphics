@@ -196,6 +196,11 @@ class HomCoordinates {
         // Default destructor
         //~HomCoordinates()
 
+    // Methods
+    public:
+        static float DotProduct(const HomCoordinates& v1, const HomCoordinates& v2);
+        static HomCoordinates CrossProduct(const HomCoordinates& v1, const HomCoordinates& v2);
+
     // Operators
     public:
         

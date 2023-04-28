@@ -22,6 +22,7 @@
 #include "graphics_math.h"
 #include "graphics_utility.h"
 #include "graphics_scene.h"
+#include "graphics_hsr.h"
 // #include "graphics_scene_plus.h"
 
 // Color constants
@@ -66,6 +67,8 @@ private:
 
 	Camera main_camera;		// Where the graphics will be viewed from
 	Scene current_scene;	// The current scene
+
+	DepthBuffer depth_buffer;	// Used to store information about the depth of current pixels
 
 
 // Functions to be implemented in graphics_backend.cpp
@@ -216,6 +219,16 @@ public:
 	 * Returns a pointer to the Scene that is currently in use.
 	 */
 	Scene* GetCurrentScene();
+
+// Advanced things, like hidden surface removal
+public:
+	inline void ClearDepthBuffer()
+	{
+		this->depth_buffer.ClearBuffer();
+	}
+	
+	void DrawDepthTriangle(Point2D p0, Point2D p1, Point2D p2, Color color, 
+		float depth0, float depth1, float depth2);
 
 // Things added for fun
 public:

@@ -348,6 +348,9 @@ class RenderableModelInstance: public ModelInstance {
             return this->is_rejected;
         }
 
+        
+        void CullBackFaces();
+
     private:
         /*
          * Clips a triangle against a plane.
@@ -581,8 +584,12 @@ class Scene
 
         /*
          * Based on a list of projected vertices, render an individual triangle to the screen.
+         *
+         * @param triangle (Triangle) the triangle (list of point indices + color) to render
+         * @param projected_vertices (Point2D[]) the 2D projections of the model's points, referenced by the triangle
+         * @param cameraspace_points (std::vector<HomCoordinates>*) pointer to the list of points before projection, for use in the depth buffer
          */
-        void RenderTriangle(Triangle triangle, Point2D projected_vertices[]);
+        void RenderTriangle(Triangle triangle, Point2D projected_vertices[], std::vector<HomCoordinates>* cameraspace_points);
 
     // Static helper methods
     private:

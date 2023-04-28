@@ -48,6 +48,9 @@ void Scene::AddModelInstance(ModelInstance & to_add)
 
 void Scene::RenderScene()
 {
+	// Reset depth buffer
+	this->graphics_manager->ClearDepthBuffer();
+	
 	// Get planes for clipping
 	std::array<Plane * , 5> planes;
 	for (int i = 0; i < 5; ++i)
@@ -126,19 +129,29 @@ void Scene::RenderInstance(RenderableModelInstance * to_render)
 		projected_points[i] = this->main_camera->ProjectVertex((*points)[i]);
 	}
 
+	// Cull the back-facing triangles
+	to_render->CullBackFaces();
+
 	// Render all triangles
 	std::vector<Triangle>* triangles = to_render->GetTriangles();
 	for (int i = 0; i < triangles->size(); ++i)
 	{
-		this->RenderTriangle((*triangles)[i], projected_points);
+		this->RenderTriangle((*triangles)[i], projected_points, points);
 	} 
 }
 
-void Scene::RenderTriangle(Triangle triangle, Point2D projected_vertices[])
+void Scene::RenderTriangle(Triangle triangle, Point2D projected_vertices[], std::vector<HomCoordinates>* cameraspace_points)
 {
-    this->graphics_manager->DrawWireTriangle(    
+	// Attributes for depth buffer = 1 / Z
+	float attribute0 = 1.0 / (cameraspace_points->at(triangle.p0))[2];
+	float attribute1 = 1.0 / (cameraspace_points->at(triangle.p1))[2];
+	float attribute2 = 1.0 / (cameraspace_points->at(triangle.p2))[2];
+
+	// Draw triangle, only overwriting pixels that are closer to the camera than what already exists
+	this->graphics_manager->DrawDepthTriangle(
 		projected_vertices[triangle.p0], projected_vertices[triangle.p1], projected_vertices[triangle.p2],
-		triangle.color);
+		triangle.color, attribute0, attribute1, attribute2
+	);
 
 }
 

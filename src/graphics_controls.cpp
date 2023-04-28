@@ -45,9 +45,22 @@ void GraphicsManager::StayOpenCameraControls()
 	float rotation_speed = 0.02;
 
 	// int * test = new int();
+	Transform * rotate_guy = this->rotate_cube->GetTransform();
+
+	float window[int(fps)];
+	int index = 0;
 
 	while (running)
 	{
+		// Spin that cube!
+		// for (int i = 0; i < 3; ++i)
+		// {
+		// 	rotate_guy->rotation[i] = (rotate_guy->rotation[i] + 0.005);
+		// 	if (rotate_guy->rotation[i] > 2 * 3.14)
+		// 	{
+		// 		rotate_guy->rotation[i] -= 2 * 3.14;
+		// 	}
+		// }
 
 		// Update inputs
 		input.UpdateInputs();
@@ -56,12 +69,30 @@ void GraphicsManager::StayOpenCameraControls()
 		current_clock = std::clock();
 		delta_time = float(current_clock - previous_clock) / (CLOCKS_PER_SEC);
 
+
+		float sum, avg;
+
 		if (delta_time >= time_between_frames)
 		{
 			// delete test;
 			// test = new int();
 			// std::cout << test << std::endl;
 			previous_clock = current_clock;
+			window[index] = delta_time;
+			index = (index + 1) % int(fps);
+			// Print frame rate
+			if (index == 0)
+			{
+				sum = 0;
+				for (int i = 0; i < int(fps); ++i)
+				{
+					sum += window[i];
+				}
+				avg = sum / int(fps);	// Average time between frames
+				std::cout << "FPS: " << (1 / avg) << std::endl;
+
+			}
+
 			// Frame is starting; do frame-based things
 
 
@@ -169,7 +200,7 @@ void GraphicsManager::StayOpenCameraControls()
 			this->ClearScreen();
 			this->current_scene.RenderScene();
 			this->RefreshScreen();
-			std::cout << "Pixel draw calls this frame: " << this->drawCount << std::endl;
+			// std::cout << "Pixel draw calls this frame: " << this->drawCount << std::endl;
 			this->drawCount = 0;
 
 		}

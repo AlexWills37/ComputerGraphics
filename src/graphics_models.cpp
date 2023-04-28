@@ -125,6 +125,8 @@ void RenderableModelInstance::ClipTrianglesAgainstPlane(Plane* plane)
 bool RenderableModelInstance::ClipTriangle(Triangle to_clip, Plane * plane)
 {
     bool clipped = true;
+    bool normal_flipped = false;    // Used to determine if we flip the normal when we sort the points.
+                                    // Every time we swap points, it is like we are reflecting the triangle, therefore flipping the normal.
 
     // Get triangle and points we are clipping
 	HomCoordinates p0, p1, p2;
@@ -153,6 +155,7 @@ bool RenderableModelInstance::ClipTriangle(Triangle to_clip, Plane * plane)
         temp_idx = to_clip.p0;
         to_clip.p0 = to_clip.p1;
         to_clip.p1 = temp_idx;
+        normal_flipped = !normal_flipped;
 	}
 	if (dist[0] > dist[2])
 	{
@@ -165,6 +168,7 @@ bool RenderableModelInstance::ClipTriangle(Triangle to_clip, Plane * plane)
         temp_idx = to_clip.p0;
         to_clip.p0 = to_clip.p2;
         to_clip.p2 = temp_idx;
+        normal_flipped = !normal_flipped;
 	}
 	if (dist[1] > dist[2])
 	{
@@ -177,6 +181,7 @@ bool RenderableModelInstance::ClipTriangle(Triangle to_clip, Plane * plane)
         temp_idx = to_clip.p1;
         to_clip.p1 = to_clip.p2;
         to_clip.p2 = temp_idx;
+        normal_flipped = !normal_flipped;
 	}
 
 
@@ -205,7 +210,13 @@ bool RenderableModelInstance::ClipTriangle(Triangle to_clip, Plane * plane)
         this->new_points.push_back(pC_prime);
 
         // Create triangle with same color, with 2 new points (B and C), and p2 from the original triangle (A)
-        Triangle new_tri = {this->new_point_start_index, this->new_point_start_index + 1, to_clip.p2, to_clip.color};
+        Triangle new_tri;
+        if (normal_flipped) 
+        {
+            new_tri = {this->new_point_start_index, this->new_point_start_index + 1, to_clip.p2, to_clip.color};
+        } else {
+            new_tri = {this->new_point_start_index + 1, this->new_point_start_index, to_clip.p2, to_clip.color};
+        }
         this->new_point_start_index += 2;
         this->new_tris.push_back(new_tri);
 
@@ -224,8 +235,15 @@ bool RenderableModelInstance::ClipTriangle(Triangle to_clip, Plane * plane)
        this->new_points.push_back(pA_prime);
        this->new_points.push_back(pB_prime);
 
-       Triangle new_tri0 = {to_clip.p2, to_clip.p1, this->new_point_start_index, to_clip.color};
-       Triangle new_tri1 = {this->new_point_start_index, to_clip.p1, this->new_point_start_index + 1, to_clip.color};
+       Triangle new_tri0, new_tri1;
+       if (normal_flipped)
+       {
+            new_tri0 = {to_clip.p2, to_clip.p1, this->new_point_start_index, to_clip.color};
+            new_tri1 = {this->new_point_start_index, to_clip.p1, this->new_point_start_index + 1, to_clip.color};
+       } else {
+            new_tri0 = {to_clip.p1, to_clip.p2, this->new_point_start_index, to_clip.color};
+            new_tri1 = {to_clip.p1, this->new_point_start_index, this->new_point_start_index + 1, to_clip.color};
+       }
        this->new_tris.push_back(new_tri0);
        this->new_tris.push_back(new_tri1);
        this->new_point_start_index += 2;

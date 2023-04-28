@@ -259,3 +259,24 @@ HomCoordinates Plane::Intersection(const HomCoordinates& pA, const HomCoordinate
 	return pA + (t * diff);
 
 }
+
+float HomCoordinates::DotProduct(const HomCoordinates& v1, const HomCoordinates& v2)
+{
+	float total = 0;
+	for (int i = 0; i < 3; ++i) 
+	{
+		total += v1[i] * v2[i];
+	}
+
+	return total;
+}
+
+HomCoordinates HomCoordinates::CrossProduct(const HomCoordinates& v1, const HomCoordinates& v2)
+{
+	float x, y, z;
+	x = v1[1] * v2[2] - v1[2] * v2[1];
+	y = v1[2] * v2[0] - v1[0] * v2[2];
+	z = v1[0] * v2[1] - v1[1] * v2[0];
+
+	return HomCoordinates(x, y, z, 0);
+}
