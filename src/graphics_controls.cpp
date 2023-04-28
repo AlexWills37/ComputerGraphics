@@ -52,15 +52,6 @@ void GraphicsManager::StayOpenCameraControls()
 
 	while (running)
 	{
-		// Spin that cube!
-		// for (int i = 0; i < 3; ++i)
-		// {
-		// 	rotate_guy->rotation[i] = (rotate_guy->rotation[i] + 0.005);
-		// 	if (rotate_guy->rotation[i] > 2 * 3.14)
-		// 	{
-		// 		rotate_guy->rotation[i] -= 2 * 3.14;
-		// 	}
-		// }
 
 		// Update inputs
 		input.UpdateInputs();
@@ -77,6 +68,16 @@ void GraphicsManager::StayOpenCameraControls()
 			// delete test;
 			// test = new int();
 			// std::cout << test << std::endl;
+			// Spin that cube!
+			for (int i = 0; i < 3; ++i)
+			{
+				rotate_guy->rotation[i] = (rotate_guy->rotation[i] + 0.005);
+				if (rotate_guy->rotation[i] > 2 * 3.14)
+				{
+					rotate_guy->rotation[i] -= 2 * 3.14;
+				}
+			}
+			
 			previous_clock = current_clock;
 			window[index] = delta_time;
 			index = (index + 1) % int(fps);

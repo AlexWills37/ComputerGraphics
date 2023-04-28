@@ -110,6 +110,7 @@ int main()
 	// triangles[11] = {2,7,3,BLUE};
 	triangles[0] = {0,1,2,ca};
 	triangles[1] = {0,2,3,ca};
+
 	triangles[2] = {4,0,3,cb};
 	triangles[3] = {4,3,7,cb};
 
@@ -166,32 +167,32 @@ int main()
 	Scene* scene1 = test.CreateScene();
 	ModelInstance * working;
 	Transform* transform;
-	for (int i = 0; i < 4; ++i)
-	{
-		// RenderInstance(manager, &(scene[i]), camera);
-		scene1->AddModelInstance(scene[i]);
-		working = new ModelInstance(scene[i]);
-		working->GetTransform()->translation[2] = -8;
-		scene1->AddModelInstance(*working);
-		working = new ModelInstance(scene[i]);
-		transform = working->GetTransform();
-		transform->translation[2] = transform->translation[0];
-		transform->translation[0] = 8;
-		transform->rotation[1] += 3.14 / 2;
-		scene1->AddModelInstance(*working);
+	// for (int i = 0; i < 4; ++i)
+	// {
+	// 	// RenderInstance(manager, &(scene[i]), camera);
+	// 	scene1->AddModelInstance(scene[i]);
+	// 	working = new ModelInstance(scene[i]);
+	// 	working->GetTransform()->translation[2] = -8;
+	// 	scene1->AddModelInstance(*working);
+	// 	working = new ModelInstance(scene[i]);
+	// 	transform = working->GetTransform();
+	// 	transform->translation[2] = transform->translation[0];
+	// 	transform->translation[0] = 8;
+	// 	transform->rotation[1] += 3.14 / 2;
+	// 	scene1->AddModelInstance(*working);
 
-		working = new ModelInstance(scene[i]);
-		transform = working->GetTransform();
-		transform->translation[2] = transform->translation[0];
-		transform->translation[0] = -8;
-		transform->rotation[1] += 3.14 / 4;
-		scene1->AddModelInstance(*working);
-	}
+	// 	working = new ModelInstance(scene[i]);
+	// 	transform = working->GetTransform();
+	// 	transform->translation[2] = transform->translation[0];
+	// 	transform->translation[0] = -8;
+	// 	transform->rotation[1] += 3.14 / 4;
+	// 	scene1->AddModelInstance(*working);
+	// }
 
 	test.rotate_cube = &(crystal[0]);
 	test.starting_y = 0;
-	// scene1->AddModelInstance(crystal[0]);
-	// scene1->AddModelInstance(crystal[1]);
+	scene1->AddModelInstance(crystal[0]);
+	scene1->AddModelInstance(crystal[1]);
 	
 	// triforce(&test);
 
