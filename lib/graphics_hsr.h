@@ -57,7 +57,7 @@ class DepthBuffer {
             }
 
             std::cout << "~ Creating Depth Buffer with top left [0][0] at (" << -this->max_x << ", " << -this->max_y << ")" << 
-                "\n\tand top right [" << this->width - 1 << "][" << this->height-1 << "] at (" << this->width - this->max_x << ", " << this->height - this->max_y << ")" << std::endl;
+                "\n\tand top right [" << this->width << "][" << this->height << "] at (" << this->width - this->max_x << ", " << this->height - this->max_y << ")" << std::endl;
         }
 
     // Overloaded operators
@@ -75,7 +75,7 @@ class DepthBuffer {
             
 
 
-            if (row > this->width || row < 0 || column > this->height || column < 0)
+            if (row > this->height || row < 0 || column > this->width || column < 0)
             {
                 std::cout << "ERROR: Indexing out of bounds (" << x << ", " << y << "). Returning DepthBuffer(0, 0)." << std::endl;
                 return buffer[0];
@@ -90,7 +90,7 @@ class DepthBuffer {
         float operator()(int row, int column) const
         {
             // Ensure index is in-bounds
-            if (row >= this->width || row < 0 || column >= this->height || column < 0)
+            if (row >= this->height || row < 0 || column >= this->width || column < 0)
             {
                 std::cout << "ERROR: Indexing out of bounds (" << row << ", " << column << "). Returning DepthBuffer(0, 0)." << std::endl;
                 return buffer[0];

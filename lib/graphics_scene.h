@@ -348,6 +348,9 @@ class RenderableModelInstance: public ModelInstance {
             return this->is_rejected;
         }
 
+        
+        void CullBackFaces();
+
     private:
         /*
          * Clips a triangle against a plane.

@@ -129,6 +129,9 @@ void Scene::RenderInstance(RenderableModelInstance * to_render)
 		projected_points[i] = this->main_camera->ProjectVertex((*points)[i]);
 	}
 
+	// Cull the back-facing triangles
+	to_render->CullBackFaces();
+
 	// Render all triangles
 	std::vector<Triangle>* triangles = to_render->GetTriangles();
 	for (int i = 0; i < triangles->size(); ++i)

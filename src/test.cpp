@@ -91,19 +91,39 @@ int main()
 	vertices[6] = {-1, -1, -1};
 	vertices[7] = {1, -1, -1};	
 
+	Color ca = {171, 244, 255};
+	Color cb = {202, 121, 237};
+	Color cc = {90, 166, 232};
+
 	std::vector<Triangle> triangles = std::vector<Triangle>(12);
-	triangles[0] = {0,1,2,RED};
-	triangles[1] = {0,2,3,RED};
-	triangles[2] = {4,0,3,GREEN};
-	triangles[3] = {4,3,7,GREEN};
-	triangles[4] = {5,4,7,INDIGO};
-	triangles[5] = {5,7,6,INDIGO};
-	triangles[6] = {1,5,6,YELLOW};
-	triangles[7] = {1,6,2,YELLOW};
-	triangles[8] = {4,5,1,PURPLE};
-	triangles[9] = {4,1,0,PURPLE};
-	triangles[10] = {2,6,7,BLUE};
-	triangles[11] = {2,7,3,BLUE};
+	// triangles[0] = {0,1,2,RED};
+	// triangles[1] = {0,2,3,RED};
+	// triangles[2] = {4,0,3,GREEN};
+	// triangles[3] = {4,3,7,GREEN};
+	// triangles[4] = {5,4,7,INDIGO};
+	// triangles[5] = {5,7,6,INDIGO};
+	// triangles[6] = {1,5,6,YELLOW};
+	// triangles[7] = {1,6,2,YELLOW};
+	// triangles[8] = {4,5,1,PURPLE};
+	// triangles[9] = {4,1,0,PURPLE};
+	// triangles[10] = {2,6,7,BLUE};
+	// triangles[11] = {2,7,3,BLUE};
+	triangles[0] = {0,1,2,ca};
+	triangles[1] = {0,2,3,ca};
+	triangles[2] = {4,0,3,cb};
+	triangles[3] = {4,3,7,cb};
+
+	triangles[4] = {5,4,7,ca};
+	triangles[5] = {5,7,6,ca};
+
+	triangles[6] = {1,5,6,cb};
+	triangles[7] = {1,6,2,cb};
+
+	triangles[8] = {4,5,1,cc};
+	triangles[9] = {4,1,0,cc};
+	
+	triangles[10] = {2,6,7,cc};
+	triangles[11] = {2,7,3,cc};
 
 
 	Model cube = {vertices, triangles};
@@ -130,13 +150,13 @@ int main()
 	// Initialize window
 	GraphicsManager test;
 	GraphicsManager* manager = &test;
-	test.OpenWindow(1000, 1000);
+	test.OpenWindow(700, 700);
 	test.GetMainCamera()->SetViewportDistance(0.2);
 
 	// triforce(&test);
 
 	Transform * cam = test.GetMainCamera()->GetTransform();
-	cam->translation[0] = 13;
+	// cam->translation[0] = 13;
 	// square(&test);
 
 	//cube(manager);
@@ -170,6 +190,8 @@ int main()
 
 	test.rotate_cube = &(crystal[0]);
 	test.starting_y = 0;
+	// scene1->AddModelInstance(crystal[0]);
+	// scene1->AddModelInstance(crystal[1]);
 	
 	// triforce(&test);
 

@@ -125,3 +125,44 @@ void GraphicsManager::DrawDepthTriangle(Point2D p0, Point2D p1, Point2D p2, Colo
 	}
 
 }
+
+/*
+ * Remove all triangles that are back-facing from this model instance's list of triangles.
+ * Before calling this method, the model should be clipped, and all of the points should be in camera space.
+ * Additionally, this method needs the camera's position.
+ * 
+ * A triangle's "front" face is the side that is visible from the camera, as determined by the 3 triangle points
+ * (p0, p1, p2) being ordered clockwise.
+ */
+void RenderableModelInstance::CullBackFaces()
+{
+
+	// Iterate through all of the triangles
+	HomCoordinates tri_to_camera;
+	HomCoordinates vec1;
+	HomCoordinates vec2;
+	HomCoordinates tri_normal;
+	Triangle candidate;
+	float dot_product;
+	for (std::vector<Triangle>::iterator iterator = this->triangles.begin(); iterator != this->triangles.end(); iterator++)
+	{
+		candidate = *iterator;	// Triangle to possibly cull
+
+		// See if the triangle is back-facing
+		tri_to_camera = -1 * (this->points[candidate.p0]); 	// Vector from the camera to a vertex of the triangle (camera is at 0, 0)
+		vec1 = this->points[candidate.p1] - this->points[candidate.p0];	// Vector from A to B on triangle ABC
+		vec2 = this->points[candidate.p2] - this->points[candidate.p0];	// Vector from A to C on triangle ABC
+		tri_normal = HomCoordinates::CrossProduct(vec1, vec2);
+
+	
+		dot_product = HomCoordinates::DotProduct(tri_normal, tri_to_camera);
+		if ( dot_product < 0)	// If triangle is back-facing
+		{	
+			// std::cout << "Culling. Dot product: " << dot_product << " normal: (" << tri_normal[0] << ", " << tri_normal[1] << ", " << tri_normal[2] << ")" <<  std::endl;
+			// Cull it! remove the triangle from the list of triangles.
+			this->triangles.erase(iterator);
+			iterator--;
+		}
+	}
+
+}
