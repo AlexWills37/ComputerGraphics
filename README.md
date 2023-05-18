@@ -54,6 +54,8 @@ The average framerate will be printed to the console every time it collects a sa
 
 `Left/Right arrows` - rotates the camera left and right.
 
+`Up/Down arrows` - rotates the camera up and down (does not work when combined with left/right rotation).
+
 
 # Chapter Breakdown
 ## Introduction
