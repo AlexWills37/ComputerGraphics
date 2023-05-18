@@ -1,5 +1,51 @@
 # ComputerGraphics
-## Read the documentation [here](documentation/GraphicsManager.md) 
+## Read the documentation [here](documentation/GraphicsManager.md) (documentation still under construction)
+
+# Project Overview
+This repository contains my implementations for [Gabriel Gambetta's computer graphics textbook](https://gabrielgambetta.com/computer-graphics-from-scratch/), which is about building up a 
+library for 3D graphics on a conceptual level.
+
+The implementation uses SDL2 in C++ for opening a window and placing pixels
+of a certain color on a certain coordinate in the window.
+Other than using SDL2 to handle user input, window management, and pixel placement,
+no external libraries (other than standard C++ libraries) are used.
+
+This implementation takes an object-oriented approach and draws some inspiration
+from game engines like Unity.
+
+Currently, a rasterization system exists to render a scene with 3D models
+from any camera point. 
+
+Future work includes improving the rasterizer:
+- shading
+- textures
+
+and implementing raytracing algorithms.
+
+# Running the code
+### Prerequisites
+To compile the code, you must have a C++ compiler, the makefile tools, and SDL2, the graphics library used to place pixels on the screen.
+
+Currently, this project is designed for Linux. It was built using Windows Subsystem for Linux and Ubuntu.
+
+### Compiling
+run `make` in this directory to build the project.
+
+run `make clean` in this directory to remove the existing build.
+
+run `./main.out` to run the program!
+> Note: the `.out` prefix is designed for Linux systems
+
+### Controls
+This program operates on a small game-loop, where it handles some limited user input and redraws the scene every frame, with a maximum framerate of 120 fps.
+
+The average framerate will be printed to the console every time it collects a sample of frames equal to the frame rate (currently every 120 frames).
+
+`W A S D` - moves the camera up, left, down, and right, respectively.
+
+`Escape` - quits the program.
+
+`Left/Right arrows` - rotates the camera left and right.
 
 
 # Chapter Breakdown
@@ -71,6 +117,21 @@ a game engine).
 
 ## Hidden Surface Removal
 
+```
+graphics_hsr.h
+graphics_hidden_surface.cpp
+```
+The graphics manager now has a DepthBuffer object for keeping track of what depth the pixels are at,
+so that objects closer to the camera are drawn on top of objects farther away.
+
+`graphics_scene.cpp`, when rendering the scene, now calls `RenderDepthTriangle()` from `graphics_hidden_surface.cpp` to make use of this depth buffer.
+
+Additionally, the backfacing faces of objects are culled here:
+```
+RenderScene()           [in graphics_scene.cpp]
+-> RenderInstance()     [in graphics_scene.cpp]
+   -> CullBackFaces()   [in graphics_hidden_surface.cpp]
+```
 
 
 ## Shading
