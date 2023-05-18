@@ -22,6 +22,12 @@ Future work includes improving the rasterizer:
 
 and implementing raytracing algorithms.
 
+## Video of the rasterizer rendering a spinning cube
+In this video, I am also moving the camera around the cube.
+https://github.com/AlexWills37/ComputerGraphics/assets/77563588/75b4eb35-36c1-40c5-92be-ff9311000056
+
+
+
 # Running the code
 ### Prerequisites
 To compile the code, you must have a C++ compiler, the makefile tools, and SDL2, the graphics library used to place pixels on the screen.
