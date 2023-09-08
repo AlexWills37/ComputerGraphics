@@ -38,9 +38,9 @@ Currently, this project is designed for Linux. It was built using Windows Subsys
 ### Compiling
 ensure there is an `obj` directory in this directory.
 
-run `make` in this directory to build the project.
-
 run `make clean` in this directory to remove the existing build.
+
+run `make` in this directory to build the project.
 
 run `./main.out` to run the program!
 > Note: the `.out` prefix is designed for Linux systems
